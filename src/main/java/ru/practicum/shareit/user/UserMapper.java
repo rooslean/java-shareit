@@ -20,7 +20,7 @@ public class UserMapper {
                 .build();
     }
 
-    public static User mapUserDtoToUserForUpdate(UserDto userDto, User user) {
+    public static void mapUserDtoToUserForUpdate(UserDto userDto, User user) {
         User updatedUser = mapUserDtoToUser(userDto);
         if (updatedUser.getName() != null) {
             user.setName(updatedUser.getName());
@@ -28,6 +28,5 @@ public class UserMapper {
         if (updatedUser.getEmail() != null) {
             user.setEmail(updatedUser.getEmail());
         }
-        return user;
     }
 }

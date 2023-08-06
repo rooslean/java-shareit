@@ -39,9 +39,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto createUser(UserDto userDto) {
-        if (!isValidForCreation(userDto)) {
-            throw new ObjectNotValidException();
-        }
+        isValidForCreation(userDto);
         isUserWithEmailExist(userDto.getEmail());
 
         User user = UserMapper.mapUserDtoToUser(userDto);
@@ -52,9 +50,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto updateUser(Long userId, UserDto userDto) {
-        if (!isValidForUpdate(userDto)) {
-            throw new ObjectNotValidException();
-        }
+        isValidForUpdate(userDto);
         isUserWithEmailExist(userDto.getEmail(), userId);
         userDto.setId(userId);
         User user = userRepository.getUserById(userDto.getId());
@@ -72,18 +68,28 @@ public class UserServiceImpl implements UserService {
         userRepository.deleteUserById(userId);
     }
 
-    private boolean isValidForCreation(UserDto userDto) {
-        return userDto.getEmail() != null
+    private void isValidForCreation(UserDto userDto) {
+        /*if (!(userDto.getEmail() != null
                 && !userDto.getEmail().isEmpty()
                 && userDto.getName() != null
-                && !userDto.getName().isEmpty();
+                && !userDto.getName().isEmpty())) {
+            throw new ObjectNotValidException();
+        }*/
+        if (userDto.getEmail() == null
+                || userDto.getEmail().isEmpty()
+                || userDto.getName() == null
+                || userDto.getName().isEmpty()) {
+            throw new ObjectNotValidException();
+        }
     }
 
-    private boolean isValidForUpdate(UserDto userDto) {
-        return userDto.getEmail() == null
-                || !userDto.getEmail().isEmpty()
-                && userDto.getName() == null
-                || !userDto.getName().isEmpty();
+    private void isValidForUpdate(UserDto userDto) {
+        if (userDto.getEmail() != null
+                && userDto.getEmail().isEmpty()
+                || userDto.getName() != null
+                && userDto.getName().isEmpty()) {
+            throw new ObjectNotValidException();
+        }
     }
 
     private void isUserWithEmailExist(String email) {
