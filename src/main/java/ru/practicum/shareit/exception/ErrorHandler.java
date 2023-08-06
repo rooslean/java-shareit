@@ -24,12 +24,14 @@ public class ErrorHandler {
         log.info(e.getMessage());
         return new ErrorResponse("Объект уже существует", e.getMessage());
     }
+
     @ExceptionHandler({ObjectNotValidException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleObjectNotValid(final RuntimeException e) {
         log.info(e.getMessage());
         return new ErrorResponse("Невалидные данные", e.getMessage());
     }
+
     @ExceptionHandler({NoRightsForUpdateException.class})
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ErrorResponse handleNoRightsForUpdate(final RuntimeException e) {

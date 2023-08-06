@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 public class InMemoryItemRepositoryImpl implements ItemRepository {
     private final Map<Long, Item> items = new HashMap<>();
     private Long itemId = 1L;
+
     @Override
     public List<Item> findAll() {
         return new ArrayList<>(items.values());
@@ -54,6 +55,7 @@ public class InMemoryItemRepositoryImpl implements ItemRepository {
         items.put(item.getId(), item);
         return item;
     }
+
     private long getId() {
         return this.itemId++;
     }

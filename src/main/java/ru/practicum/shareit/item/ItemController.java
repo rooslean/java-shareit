@@ -38,6 +38,7 @@ public class ItemController {
     public List<ItemDto> findItemsByOwnerId(@RequestHeader("X-Sharer-User-Id") Long userId) {
         return itemService.findItemsByOwnerId(userId);
     }
+
     @GetMapping("/search")
     public List<ItemDto> searchItemsByPhrase(@RequestParam("text") String searchPhrase) {
         return itemService.searchItemsByPhrase(searchPhrase);

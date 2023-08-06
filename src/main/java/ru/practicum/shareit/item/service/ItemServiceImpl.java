@@ -104,6 +104,7 @@ public class ItemServiceImpl implements ItemService {
             throw new ObjectNotValidException();
         }
     }
+
     private void isValidForUpdate(ItemDto itemDto) {
         if (itemDto.getName() != null
                 && itemDto.getName().isEmpty()
