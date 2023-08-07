@@ -35,11 +35,11 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto getItemById(Long itemId) {
-        ItemDto itemDto = ItemMapper.mapItemToItemDto(itemRepository.getItemById(itemId));
-        if (itemDto == null) {
+        Item item = itemRepository.getItemById(itemId);
+        if (item == null) {
             throw new ObjectNotFoundException("Предмет", itemId);
         }
-        return itemDto;
+        return ItemMapper.mapItemToItemDto(item);
     }
 
     @Override

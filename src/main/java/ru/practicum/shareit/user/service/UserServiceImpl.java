@@ -31,11 +31,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto getUserById(Long userId) {
-        UserDto userDto = UserMapper.mapUserToUserDto(userRepository.getUserById(userId));
-        if (userDto == null) {
+        User user = userRepository.getUserById(userId);
+        if (user == null) {
             throw new ObjectNotFoundException("Пользователь", userId);
         }
-        return userDto;
+        return UserMapper.mapUserToUserDto(user);
     }
 
     @Override
