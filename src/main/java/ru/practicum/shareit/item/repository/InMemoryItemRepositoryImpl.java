@@ -35,11 +35,12 @@ public class InMemoryItemRepositoryImpl implements ItemRepository {
 
     @Override
     public List<Item> findItemsByNameOrDescription(String searchPhrase) {
+        String lowerSearchPhrase = searchPhrase.toLowerCase();
         return items.values()
                 .stream()
                 .filter(item -> item.getAvailable()
-                        && (item.getName().toLowerCase().contains(searchPhrase.toLowerCase())
-                        || item.getDescription().toLowerCase().contains(searchPhrase.toLowerCase())))
+                        && (item.getName().toLowerCase().contains(lowerSearchPhrase)
+                        || item.getDescription().toLowerCase().contains(lowerSearchPhrase)))
                 .collect(Collectors.toList());
     }
 
