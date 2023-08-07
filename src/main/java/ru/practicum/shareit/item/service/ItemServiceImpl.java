@@ -85,7 +85,7 @@ public class ItemServiceImpl implements ItemService {
         if (item == null) {
             throw new ObjectNotFoundException("Предмет", itemId);
         }
-        if (!Objects.equals(owner, item.getOwner())) {
+        if (!Objects.equals(owner.getId(), item.getOwner().getId())) {
             throw new NoRightsForUpdateException();
         }
         User newOwner = Objects.equals(ownerId, itemDto.getOwnerId()) || itemDto.getOwnerId() == null
