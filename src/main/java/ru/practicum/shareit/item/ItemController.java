@@ -22,11 +22,6 @@ import java.util.List;
 public class ItemController {
     private final ItemService itemService;
 
-//    @GetMapping
-//    public List<ItemDto> getAllItems() {
-//        return itemService.getAllItems();
-//    }
-
     @GetMapping("/{itemId}")
     public ItemDto getItemById(@PathVariable Long itemId) {
         return itemService.getItemById(itemId);

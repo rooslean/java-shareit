@@ -15,29 +15,28 @@ public class ItemMapper {
                 .build();
     }
 
-    public static Item mapItemDtoToItem(ItemDto itemDto) {
+    public static Item mapItemDtoToItem(ItemDto itemDto, User owner) {
         return Item.builder()
                 .id(itemDto.getId())
-                .owner(new User(itemDto.getOwnerId()))
+                .owner(owner)
                 .name(itemDto.getName())
                 .description(itemDto.getDescription())
                 .available(itemDto.getAvailable())
                 .build();
     }
 
-    public static void mapItemDtoToUserForUpdate(ItemDto itemDto, Item item) {
-        Item updatedItem = mapItemDtoToItem(itemDto);
+    public static void mapItemDtoToItemForUpdate(ItemDto itemDto, Item item, User owner) {
         if (itemDto.getOwnerId() != null) {
-            item.setOwner(updatedItem.getOwner());
+            item.setOwner(owner);
         }
-        if (updatedItem.getName() != null) {
-            item.setName(updatedItem.getName());
+        if (itemDto.getName() != null) {
+            item.setName(itemDto.getName());
         }
-        if (updatedItem.getDescription() != null) {
-            item.setDescription(updatedItem.getDescription());
+        if (itemDto.getDescription() != null) {
+            item.setDescription(itemDto.getDescription());
         }
-        if (updatedItem.getAvailable() != null) {
-            item.setAvailable(updatedItem.getAvailable());
+        if (itemDto.getAvailable() != null) {
+            item.setAvailable(itemDto.getAvailable());
         }
     }
 }

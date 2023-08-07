@@ -68,8 +68,7 @@ public class ItemServiceImpl implements ItemService {
         if (owner == null) {
             throw new ObjectNotFoundException("Пользователь", ownerId);
         }
-        Item item = ItemMapper.mapItemDtoToItem(itemDto);
-        item.setOwner(owner);
+        Item item = ItemMapper.mapItemDtoToItem(itemDto, owner);
         itemDto = ItemMapper.mapItemToItemDto(itemRepository.add(item));
         log.info("Предмет с идентификатором {} был добавлен для пользователя {} был создан", item.getId(), ownerId);
         return itemDto;
@@ -89,7 +88,12 @@ public class ItemServiceImpl implements ItemService {
         if (!Objects.equals(owner, item.getOwner())) {
             throw new NoRightsForUpdateException();
         }
-        ItemMapper.mapItemDtoToUserForUpdate(itemDto, item);
+        User newOwner = Objects.equals(ownerId, itemDto.getOwnerId()) || itemDto.getOwnerId() == null
+                ? owner : userRepository.getUserById(itemDto.getOwnerId());
+        if (newOwner == null) {
+            throw new ObjectNotFoundException("Пользователь", ownerId);
+        }
+        ItemMapper.mapItemDtoToItemForUpdate(itemDto, item, newOwner);
         itemDto = ItemMapper.mapItemToItemDto(itemRepository.save(item));
         log.info("Данные предмета с идентификатором {} были обновлены", item.getId());
         return itemDto;
