@@ -11,8 +11,14 @@ import javax.validation.constraints.Email;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserDto {
+    /*
+     * А эти аннотации мешали при обновлении объекта
+     * Передавалось только имя и из-за этого бэд реквест падал, так как не было мейла
+     * Вот и решил эти закомментировать, оставить только аннотацию мейла,
+     * А для остального в сервисах методы с валидацией сделать
+     * */
     Long id;
-    //    @NotBlank
+    //        @NotBlank
     String name;
     @Email
 //    @NotBlank
