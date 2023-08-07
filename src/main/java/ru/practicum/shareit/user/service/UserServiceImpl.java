@@ -70,12 +70,6 @@ public class UserServiceImpl implements UserService {
     }
 
     private void isValidForCreation(UserDto userDto) {
-        /*if (!(userDto.getEmail() != null
-                && !userDto.getEmail().isEmpty()
-                && userDto.getName() != null
-                && !userDto.getName().isEmpty())) {
-            throw new ObjectNotValidException();
-        }*/
         if (userDto.getEmail() == null
                 || userDto.getEmail().isEmpty()
                 || userDto.getName() == null
