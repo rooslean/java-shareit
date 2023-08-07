@@ -21,12 +21,11 @@ public class UserMapper {
     }
 
     public static void mapUserDtoToUserForUpdate(UserDto userDto, User user) {
-        User updatedUser = mapUserDtoToUser(userDto);
-        if (updatedUser.getName() != null) {
-            user.setName(updatedUser.getName());
+        if (userDto.getName() != null) {
+            user.setName(userDto.getName());
         }
-        if (updatedUser.getEmail() != null) {
-            user.setEmail(updatedUser.getEmail());
+        if (userDto.getEmail() != null) {
+            user.setEmail(userDto.getEmail());
         }
     }
 }
