@@ -40,7 +40,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto createUser(UserDto userDto) {
-        isValidForCreation(userDto);
         isUserWithEmailExist(userDto.getEmail());
 
         User user = UserMapper.mapUserDtoToUser(userDto);
@@ -68,15 +67,7 @@ public class UserServiceImpl implements UserService {
     public void deleteUserById(Long userId) {
         userRepository.deleteUserById(userId);
     }
-
-    private void isValidForCreation(UserDto userDto) {
-        if (userDto.getEmail() == null
-                || userDto.getEmail().isEmpty()
-                || userDto.getName() == null
-                || userDto.getName().isEmpty()) {
-            throw new ObjectNotValidException();
-        }
-    }
+    
 
     private void isValidForUpdate(UserDto userDto) {
         if (userDto.getEmail() != null
