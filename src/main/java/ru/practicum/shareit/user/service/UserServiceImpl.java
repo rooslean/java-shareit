@@ -40,10 +40,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto createUser(UserDto userDto) {
-        isUserWithEmailExist(userDto.getEmail());
+//        isUserWithEmailExist(userDto.getEmail());
 
         User user = UserMapper.mapUserDtoToUser(userDto);
-        userDto = UserMapper.mapUserToUserDto(userRepository.create(user));
+        userDto = UserMapper.mapUserToUserDto(userRepository.save(user));
         log.info("Пользователь с идентификатором {} и почтой {} был создан", user.getId(), user.getEmail());
         return userDto;
     }
@@ -51,7 +51,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto updateUser(Long userId, UserDto userDto) {
         isValidForUpdate(userDto);
-        isUserWithEmailExist(userDto.getEmail(), userId);
+//        isUserWithEmailExist(userDto.getEmail(), userId);
         userDto.setId(userId);
         User user = userRepository.getUserById(userDto.getId());
         if (userDto.getId() == null || user == null) {
@@ -65,9 +65,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUserById(Long userId) {
-        userRepository.deleteUserById(userId);
+        userRepository.deleteById(userId);
     }
-    
+
 
     private void isValidForUpdate(UserDto userDto) {
         if (userDto.getEmail() != null
