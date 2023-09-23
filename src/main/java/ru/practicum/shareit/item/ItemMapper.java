@@ -4,6 +4,9 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ItemMapper {
     public static ItemDto mapItemToItemDto(Item item) {
         return ItemDto.builder()
@@ -13,6 +16,14 @@ public class ItemMapper {
                 .description(item.getDescription())
                 .available(item.getAvailable())
                 .build();
+    }
+
+    public static List<ItemDto> mapItemToItemDto(Iterable<Item> items) {
+        List<ItemDto> itemsDto = new ArrayList<>();
+        for (Item item : items) {
+            itemsDto.add(ItemMapper.mapItemToItemDto(item));
+        }
+        return itemsDto;
     }
 
     public static Item mapItemDtoToItem(ItemDto itemDto, User owner) {

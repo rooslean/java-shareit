@@ -27,10 +27,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDto> getAllItems() {
-        return itemRepository.findAll()
-                .stream()
-                .map(ItemMapper::mapItemToItemDto)
-                .collect(Collectors.toList());
+        return ItemMapper.mapItemToItemDto(itemRepository.findAll());
     }
 
     @Override
@@ -44,7 +41,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDto> findItemsByOwnerId(Long ownerId) {
-        return itemRepository.findItemsByOwnerId(ownerId)
+        return itemRepository.findByOwnerId(ownerId)
                 .stream()
                 .map(ItemMapper::mapItemToItemDto)
                 .collect(Collectors.toList());
@@ -55,7 +52,7 @@ public class ItemServiceImpl implements ItemService {
         if (searchPhrase == null || searchPhrase.trim().isEmpty()) {
             return Collections.emptyList();
         }
-        return itemRepository.findItemsByNameOrDescription(searchPhrase)
+        return itemRepository.findByNameOrDescription(searchPhrase)
                 .stream()
                 .map(ItemMapper::mapItemToItemDto)
                 .collect(Collectors.toList());
@@ -69,7 +66,7 @@ public class ItemServiceImpl implements ItemService {
             throw new ObjectNotFoundException("Пользователь", ownerId);
         }
         Item item = ItemMapper.mapItemDtoToItem(itemDto, owner);
-        itemDto = ItemMapper.mapItemToItemDto(itemRepository.add(item));
+        itemDto = ItemMapper.mapItemToItemDto(itemRepository.save(item));
         log.info("Предмет с идентификатором {} был добавлен для пользователя {} был создан", item.getId(), ownerId);
         return itemDto;
     }
