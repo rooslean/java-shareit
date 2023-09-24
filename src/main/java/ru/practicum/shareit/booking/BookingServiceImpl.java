@@ -21,11 +21,12 @@ import java.util.Objects;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class BookingServiceImpl implements BookingService  {
+public class BookingServiceImpl implements BookingService {
 
     private final BookingRepository bookingRepository;
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
+
     @Override
     @Transactional
     public BookingDto add(NewBookingDto newBookingDto, long bookerId) {
@@ -77,7 +78,7 @@ public class BookingServiceImpl implements BookingService  {
         List<BookingDto> bookingsDto = new ArrayList<>();
         doesUserExist(bookerId);
         switch (state) {
-            case ALL :
+            case ALL:
                 bookingsDto = BookingMapper.mapToBookingDto(bookingRepository.findAllByBookerIdOrderByStartDesc(bookerId));
                 break;
             case CURRENT:
@@ -104,7 +105,7 @@ public class BookingServiceImpl implements BookingService  {
         List<BookingDto> bookingsDto = new ArrayList<>();
         doesUserExist(ownerId);
         switch (state) {
-            case ALL :
+            case ALL:
                 bookingsDto = BookingMapper.mapToBookingDto(bookingRepository.findAllByItemOwnerIdOrderByStartDesc(ownerId));
                 break;
             case CURRENT:
@@ -133,6 +134,7 @@ public class BookingServiceImpl implements BookingService  {
             throw new ObjectNotValidException("Дата начала не может быть равна или позже даты конца");
         }
     }
+
     private void checkCrossedPeriods(NewBookingDto newBookingDto) {
         LocalDateTime start = newBookingDto.getStart();
         LocalDateTime end = newBookingDto.getEnd();
@@ -145,6 +147,7 @@ public class BookingServiceImpl implements BookingService  {
             throw new BadRequestException("Имеются пересечения с периодами по существующим бронированиям");
         }
     }
+
     private User doesUserExist(long userId) {
         User user = userRepository.getUserById(userId);
         if (user == null) {

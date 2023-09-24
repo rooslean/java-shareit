@@ -25,6 +25,7 @@ public class BookingMapper {
                 .status(booking.getStatus())
                 .build();
     }
+
     public static ShortBookingDto mapToShortBookingDto(Booking booking) {
         return ShortBookingDto.builder()
                 .id(booking.getId())
