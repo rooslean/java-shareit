@@ -1,9 +1,14 @@
 package ru.practicum.shareit.item;
 
+import ru.practicum.shareit.booking.Booking;
+import ru.practicum.shareit.booking.BookingMapper;
+import ru.practicum.shareit.booking.dto.ShortBookingDto;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemDtoWithBookings;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +21,24 @@ public class ItemMapper {
                 .description(item.getDescription())
                 .available(item.getAvailable())
                 .build();
+    }
+
+    public static ItemDto mapToItemDtoWithBookings(Item item, List<Booking> bookings) {
+        ShortBookingDto lastBooking = null;
+        ShortBookingDto nextBooking = null;
+        if (bookings.size() > 1) {
+            lastBooking = BookingMapper.mapToShortBookingDto(bookings.get(0));
+            nextBooking = BookingMapper.mapToShortBookingDto(bookings.get(1));
+        } else if (bookings.size() == 1) {
+            LocalDateTime now = LocalDateTime.now();
+            if (bookings.get(0).getStart().isAfter(now)) {
+                nextBooking = BookingMapper.mapToShortBookingDto(bookings.get(0));
+            } else {
+                lastBooking = BookingMapper.mapToShortBookingDto(bookings.get(0));
+            }
+        }
+        return new ItemDtoWithBookings(item.getId(), item.getOwner().getId(),
+                item.getName(), item.getDescription(), item.getAvailable(), lastBooking, nextBooking);
     }
 
     public static List<ItemDto> mapItemToItemDto(Iterable<Item> items) {

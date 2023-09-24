@@ -12,7 +12,7 @@ public interface ItemRepository extends CrudRepository<Item, Long> {
 
     Item getItemById(Long itemId);
 
-    List<Item> findByOwnerId(Long ownerId);
+    List<Item> findByOwnerIdOrderById(Long ownerId);
 
     @Query("select i " +
             "from Item as i " +

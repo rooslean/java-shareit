@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.booking.Booking;
+import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.exception.NoRightsForUpdateException;
 import ru.practicum.shareit.exception.ObjectNotFoundException;
 import ru.practicum.shareit.exception.ObjectNotValidException;
@@ -14,6 +16,8 @@ import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -26,27 +30,35 @@ import java.util.stream.Collectors;
 public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
+    private final BookingRepository bookingRepository;
+
 
     @Override
-    public List<ItemDto> getAllItems() {
-        return ItemMapper.mapItemToItemDto(itemRepository.findAll());
-    }
-
-    @Override
-    public ItemDto getItemById(Long itemId) {
+    public ItemDto getItemById(Long itemId, Long userId) {
         Item item = itemRepository.getItemById(itemId);
         if (item == null) {
             throw new ObjectNotFoundException("Предмет", itemId);
         }
-        return ItemMapper.mapItemToItemDto(item);
+        ItemDto itemDto;
+        if (Objects.equals(item.getOwner().getId(), userId)) {
+            List<Booking> bookings = bookingRepository.findLastAndNearFutureBookingsByItemId(itemId, LocalDateTime.now());
+            itemDto = ItemMapper.mapToItemDtoWithBookings(item, bookings);
+        } else {
+            itemDto = ItemMapper.mapToItemDtoWithBookings(item, new ArrayList<>());
+        }
+        return itemDto;
     }
 
     @Override
     public List<ItemDto> findItemsByOwnerId(Long ownerId) {
-        return itemRepository.findByOwnerId(ownerId)
-                .stream()
-                .map(ItemMapper::mapItemToItemDto)
-                .collect(Collectors.toList());
+        List<Item> items = itemRepository.findByOwnerIdOrderById(ownerId);
+        List<ItemDto> itemsWithBookings = new ArrayList<>();
+        for (Item item : items) {
+            List<Booking> bookings = bookingRepository.findLastAndNearFutureBookingsByItemId(item.getId(), LocalDateTime.now());
+            ItemDto itemDtoWithBookings = ItemMapper.mapToItemDtoWithBookings(item, bookings);
+            itemsWithBookings.add(itemDtoWithBookings);
+        }
+        return itemsWithBookings;
     }
 
     @Override
