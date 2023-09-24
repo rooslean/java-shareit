@@ -19,39 +19,24 @@ public interface BookingRepository extends CrudRepository<Booking, Long> {
 
     List<Booking> findByItemIdAndEndAfter(long itemId, LocalDateTime now);
 
+    List<Booking> findByItemIdAndBookerIdAndStatusNotAndEndBefore(long itemId, long bookerId, BookingStatus status, LocalDateTime now);
+
     //Находим последнее и ближайшее будущее бронирования
     @Query("select b " +
             "from Booking b" +
-//            " join b.item i" +
             " where b.item.id = ?1" +
-            " and (b.start = " +
+            " and b.status <> 'REJECTED'" +
+            " and(b.start = " +
             "           (select max(b2.start) " +
             "                   from Booking b2 " +
-//            "                   join b2.item i2" +
             "                   where b2.item.id = ?1 and b2.start <= ?2)" +
             " or b.start = " +
             "           (select min(b3.start) " +
             "           from Booking b3 " +
-//            "           join b3.item i3" +
             "           where b3.item.id = ?1 and b3.start > ?2))" +
             "order by b.start asc")
     List<Booking> findLastAndNearFutureBookingsByItemId(long itemId, LocalDateTime now);
 
-
-/*    @Query("select b " +
-            "from Booking b" +
-            " join b.item i" +
-            " where i.id = ?1" +
-            " and (b.start = " +
-            "           (select max(b2.start) " +
-            "                   from Booking b2 " +
-            "                   join b2.item i2" +
-            "                   where i2.id = ?1 and b2.start <= CURRENT_TIMESTAMP)" +
-            " or b.start = " +
-            "           (select min(b3.start) " +
-            "           from Booking b3 " +
-            "           join b3.item i3" +
-            "           where i3.id = ?1 and b3.start > CURRENT_TIMESTAMP))")*/
     // Поиск всех бронирований заказчика
     Iterable<Booking> findAllByBookerIdOrderByStartDesc(long bookerId); //ALL
 

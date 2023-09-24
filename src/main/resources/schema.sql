@@ -1,4 +1,5 @@
 DROP TABLE IF EXISTS bookings;
+DROP TABLE IF EXISTS comments;
 DROP TABLE IF EXISTS items;
 DROP TABLE IF EXISTS users;
 
@@ -30,4 +31,14 @@ CREATE TABLE IF NOT EXISTS bookings (
     status VARCHAR(50),
     CONSTRAINT fk_bookings_to_items FOREIGN KEY(item_id) REFERENCES items(id),
     CONSTRAINT fk_bookings_to_bookers FOREIGN KEY(booker_id) REFERENCES users(id)
+);
+
+CREATE TABLE IF NOT EXISTS comments (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    item_id BIGINT,
+    author_id BIGINT,
+    text VARCHAR(1000),
+    created timestamp without time zone,
+    CONSTRAINT fk_comments_to_items FOREIGN KEY(item_id) REFERENCES items(id),
+    CONSTRAINT fk_comments_to_bookers FOREIGN KEY(author_id) REFERENCES users(id)
 );

@@ -7,6 +7,9 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import ru.practicum.shareit.booking.dto.ShortBookingDto;
+import ru.practicum.shareit.item.comments.CommentDto;
+
+import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -16,11 +19,13 @@ import ru.practicum.shareit.booking.dto.ShortBookingDto;
 public class ItemDtoWithBookings extends ItemDto {
     ShortBookingDto lastBooking;
     ShortBookingDto nextBooking;
+    List<CommentDto> comments;
 
     public ItemDtoWithBookings(Long id, Long ownerId, String name, String description, Boolean available,
-                               ShortBookingDto lastBooking, ShortBookingDto nextBooking) {
+                               ShortBookingDto lastBooking, ShortBookingDto nextBooking, List<CommentDto> comments) {
         super(id, ownerId, name, description, available);
         this.lastBooking = lastBooking;
         this.nextBooking = nextBooking;
+        this.comments = comments;
     }
 }

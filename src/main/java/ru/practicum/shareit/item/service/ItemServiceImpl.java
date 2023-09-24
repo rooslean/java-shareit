@@ -6,10 +6,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingRepository;
+import ru.practicum.shareit.booking.BookingStatus;
+import ru.practicum.shareit.exception.BadRequestException;
 import ru.practicum.shareit.exception.NoRightsForUpdateException;
 import ru.practicum.shareit.exception.ObjectNotFoundException;
 import ru.practicum.shareit.exception.ObjectNotValidException;
 import ru.practicum.shareit.item.ItemMapper;
+import ru.practicum.shareit.item.comments.Comment;
+import ru.practicum.shareit.item.comments.CommentDto;
+import ru.practicum.shareit.item.comments.CommentMapper;
+import ru.practicum.shareit.item.comments.CommentRepository;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
@@ -31,6 +37,7 @@ public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
+    private final CommentRepository commentRepository;
 
 
     @Override
@@ -40,12 +47,15 @@ public class ItemServiceImpl implements ItemService {
             throw new ObjectNotFoundException("Предмет", itemId);
         }
         ItemDto itemDto;
+        List<Booking> bookings;
         if (Objects.equals(item.getOwner().getId(), userId)) {
-            List<Booking> bookings = bookingRepository.findLastAndNearFutureBookingsByItemId(itemId, LocalDateTime.now());
-            itemDto = ItemMapper.mapToItemDtoWithBookings(item, bookings);
+            bookings = bookingRepository.findLastAndNearFutureBookingsByItemId(itemId, LocalDateTime.now());
         } else {
-            itemDto = ItemMapper.mapToItemDtoWithBookings(item, new ArrayList<>());
+            bookings = new ArrayList<>();
         }
+        List<CommentDto> comments = CommentMapper.mapToCommentDto(commentRepository.findByItemIdOrderByCreated(itemId));
+        itemDto = ItemMapper.mapToItemDtoWithBookings(item, bookings, comments);
+
         return itemDto;
     }
 
@@ -55,7 +65,8 @@ public class ItemServiceImpl implements ItemService {
         List<ItemDto> itemsWithBookings = new ArrayList<>();
         for (Item item : items) {
             List<Booking> bookings = bookingRepository.findLastAndNearFutureBookingsByItemId(item.getId(), LocalDateTime.now());
-            ItemDto itemDtoWithBookings = ItemMapper.mapToItemDtoWithBookings(item, bookings);
+            List<CommentDto> comments = CommentMapper.mapToCommentDto(commentRepository.findByItemIdOrderByCreated(item.getId()));
+            ItemDto itemDtoWithBookings = ItemMapper.mapToItemDtoWithBookings(item, bookings, comments);
             itemsWithBookings.add(itemDtoWithBookings);
         }
         return itemsWithBookings;
@@ -110,6 +121,26 @@ public class ItemServiceImpl implements ItemService {
         itemDto = ItemMapper.mapItemToItemDto(itemRepository.save(item));
         log.info("Данные предмета с идентификатором {} были обновлены", item.getId());
         return itemDto;
+    }
+
+    @Transactional
+    @Override
+    public CommentDto addComment(Long itemId, Long userId, CommentDto commentDto) {
+        Item item = itemRepository.getItemById(itemId);
+        if (item == null) {
+            throw new ObjectNotFoundException();
+        }
+        User user = userRepository.getUserById(userId);
+        if (user == null) {
+            throw new ObjectNotFoundException();
+        }
+        List<Booking> bookings = bookingRepository.findByItemIdAndBookerIdAndStatusNotAndEndBefore(
+                itemId, userId, BookingStatus.REJECTED, LocalDateTime.now());
+        if (bookings.isEmpty()) {
+            throw new BadRequestException("Нельзя оставить комментарий без бронирования");
+        }
+        Comment comment = commentRepository.save(CommentMapper.mapToComment(commentDto, item, user));
+        return CommentMapper.mapToCommentDto(comment);
     }
 
     private void isValidForCreation(ItemDto itemDto) {
