@@ -53,7 +53,6 @@ public class ItemMapper {
                         CommentMapper.mapToCommentDto(comments.getOrDefault(i.getId(), new ArrayList<>()))))
                 .collect(Collectors.toList());
     }
-    
 
     public static Item mapItemDtoToItem(ItemDto itemDto, User owner) {
         return Item.builder()
