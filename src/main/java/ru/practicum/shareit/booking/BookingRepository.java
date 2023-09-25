@@ -6,6 +6,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 
 @Repository
@@ -25,17 +26,17 @@ public interface BookingRepository extends CrudRepository<Booking, Long> {
     //Находим последнее и ближайшее будущее бронирования
     @Query("select b " +
             "from Booking b" +
-            " where b.item.id = ?1" +
+            " where b.item.id in ?1" +
             " and b.status <> 'REJECTED'" +
             " and(b.start = " +
             "           (select max(b2.start) " +
             "                   from Booking b2 " +
-            "                   where b2.item.id = ?1 and b2.start <= ?2)" +
+            "                   where b2.item.id in ?1 and b2.start <= ?2)" +
             " or b.start = " +
             "           (select min(b3.start) " +
             "           from Booking b3 " +
-            "           where b3.item.id = ?1 and b3.start > ?2))")
-    List<Booking> findLastAndNearFutureBookingsByItemId(long itemId, LocalDateTime now, Sort sort);
+            "           where b3.item.id in ?1 and b3.start > ?2))")
+    List<Booking> findLastAndNearFutureBookingsByItemIn(Collection<Long> itemIds, LocalDateTime now, Sort sort);
 
     // Поиск всех бронирований заказчика
     Iterable<Booking> findAllByBookerIdOrderByStartDesc(long bookerId); //ALL

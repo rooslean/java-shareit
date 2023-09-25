@@ -25,10 +25,13 @@ import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -52,11 +55,11 @@ public class ItemServiceImpl implements ItemService {
         List<Booking> bookings;
         if (Objects.equals(item.getOwner().getId(), userId)) {
             Sort sort = Sort.by("start").ascending();
-            bookings = bookingRepository.findLastAndNearFutureBookingsByItemId(itemId, LocalDateTime.now(), sort);
+            bookings = bookingRepository.findLastAndNearFutureBookingsByItemIn(Set.of(itemId), LocalDateTime.now(), sort);
         } else {
             bookings = new ArrayList<>();
         }
-        List<CommentDto> comments = CommentMapper.mapToCommentDto(commentRepository.findByItemIdOrderByCreated(itemId));
+        List<CommentDto> comments = CommentMapper.mapToCommentDto(commentRepository.findByItemIdInOrderByCreated(Set.of(itemId)));
         itemDto = ItemMapper.mapToItemDtoWithBookings(item, bookings, comments);
 
         return itemDto;
@@ -65,14 +68,16 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public List<ItemDto> findItemsByOwnerId(Long ownerId) {
         List<Item> items = itemRepository.findByOwnerIdOrderById(ownerId);
-        List<ItemDto> itemsWithBookings = new ArrayList<>();
-        for (Item item : items) {
-            Sort sort = Sort.by("start").ascending();
-            List<Booking> bookings = bookingRepository.findLastAndNearFutureBookingsByItemId(item.getId(), LocalDateTime.now(), sort);
-            List<CommentDto> comments = CommentMapper.mapToCommentDto(commentRepository.findByItemIdOrderByCreated(item.getId()));
-            ItemDto itemDtoWithBookings = ItemMapper.mapToItemDtoWithBookings(item, bookings, comments);
-            itemsWithBookings.add(itemDtoWithBookings);
-        }
+        List<ItemDto> itemsWithBookings;
+        Sort sort = Sort.by("start").ascending();
+        Collection<Long> itemIds = items.stream().map(Item::getId).collect(Collectors.toSet());
+        Map<Long, List<Booking>> bookings = bookingRepository.findLastAndNearFutureBookingsByItemIn(
+                        itemIds, LocalDateTime.now(), sort)
+                .stream()
+                .collect(Collectors.groupingBy(b -> b.getItem().getId()));
+        Map<Long, List<Comment>> comments = commentRepository.findByItemIdInOrderByCreated(itemIds).stream()
+                .collect(Collectors.groupingBy(c -> c.getItem().getId()));
+        itemsWithBookings = ItemMapper.mapToItemDtoWithBookings(items, bookings, comments);
         return itemsWithBookings;
     }
 

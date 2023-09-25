@@ -3,7 +3,9 @@ package ru.practicum.shareit.item;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingMapper;
 import ru.practicum.shareit.booking.dto.ShortBookingDto;
+import ru.practicum.shareit.item.comments.Comment;
 import ru.practicum.shareit.item.comments.CommentDto;
+import ru.practicum.shareit.item.comments.CommentMapper;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoWithBookings;
 import ru.practicum.shareit.item.model.Item;
@@ -12,6 +14,8 @@ import ru.practicum.shareit.user.model.User;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class ItemMapper {
     public static ItemDto mapItemToItemDto(Item item) {
@@ -42,13 +46,14 @@ public class ItemMapper {
                 item.getName(), item.getDescription(), item.getAvailable(), lastBooking, nextBooking, comments);
     }
 
-    public static List<ItemDto> mapItemToItemDto(Iterable<Item> items) {
-        List<ItemDto> itemsDto = new ArrayList<>();
-        for (Item item : items) {
-            itemsDto.add(ItemMapper.mapItemToItemDto(item));
-        }
-        return itemsDto;
+    public static List<ItemDto> mapToItemDtoWithBookings(List<Item> items, Map<Long,
+            List<Booking>> bookings, Map<Long, List<Comment>> comments) {
+        return items.stream()
+                .map(i -> ItemMapper.mapToItemDtoWithBookings(i, bookings.getOrDefault(i.getId(), new ArrayList<>()),
+                        CommentMapper.mapToCommentDto(comments.getOrDefault(i.getId(), new ArrayList<>()))))
+                .collect(Collectors.toList());
     }
+    
 
     public static Item mapItemDtoToItem(ItemDto itemDto, User owner) {
         return Item.builder()
