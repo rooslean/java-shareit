@@ -8,7 +8,4 @@ import ru.practicum.shareit.user.model.User;
 public interface UserRepository extends JpaRepository<User, Long> {
 
     User getUserById(Long userId);
-
-    User getUserByEmail(String email);
-
 }
