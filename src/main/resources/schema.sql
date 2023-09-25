@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS items (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     user_id BIGINT,
     name VARCHAR(255),
-    description VARCHAR(1000),
+    description VARCHAR(5000),
     available BOOLEAN DEFAULT FALSE,
     CONSTRAINT fk_items_to_users FOREIGN KEY(user_id) REFERENCES users(id)
 );
