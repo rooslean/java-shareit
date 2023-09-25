@@ -1,6 +1,7 @@
 package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingDto;
@@ -83,7 +84,8 @@ public class BookingServiceImpl implements BookingService {
                 bookingsDto = BookingMapper.mapToBookingDto(bookingRepository.findAllByBookerIdOrderByStartDesc(bookerId));
                 break;
             case CURRENT:
-                bookingsDto = BookingMapper.mapToBookingDto(bookingRepository.findAllBookerCurrentBookings(bookerId, LocalDateTime.now()));
+                Sort sort = Sort.by("start").descending();
+                bookingsDto = BookingMapper.mapToBookingDto(bookingRepository.findAllBookerCurrentBookings(bookerId, LocalDateTime.now(), sort));
                 break;
             case PAST:
                 bookingsDto = BookingMapper.mapToBookingDto(bookingRepository.findAllByBookerIdAndEndBeforeOrderByStartDesc(bookerId, LocalDateTime.now()));
@@ -110,7 +112,8 @@ public class BookingServiceImpl implements BookingService {
                 bookingsDto = BookingMapper.mapToBookingDto(bookingRepository.findAllByItemOwnerIdOrderByStartDesc(ownerId));
                 break;
             case CURRENT:
-                bookingsDto = BookingMapper.mapToBookingDto(bookingRepository.findAllOwnerCurrentBookings(ownerId, LocalDateTime.now()));
+                Sort sort = Sort.by("start").descending();
+                bookingsDto = BookingMapper.mapToBookingDto(bookingRepository.findAllOwnerCurrentBookings(ownerId, LocalDateTime.now(), sort));
                 break;
             case PAST:
                 bookingsDto = BookingMapper.mapToBookingDto(bookingRepository.findAllByItemOwnerIdAndEndBeforeOrderByStartDesc(ownerId, LocalDateTime.now()));

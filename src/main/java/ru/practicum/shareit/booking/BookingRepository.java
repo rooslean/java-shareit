@@ -1,5 +1,6 @@
 package ru.practicum.shareit.booking;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
@@ -33,9 +34,8 @@ public interface BookingRepository extends CrudRepository<Booking, Long> {
             " or b.start = " +
             "           (select min(b3.start) " +
             "           from Booking b3 " +
-            "           where b3.item.id = ?1 and b3.start > ?2))" +
-            "order by b.start asc")
-    List<Booking> findLastAndNearFutureBookingsByItemId(long itemId, LocalDateTime now);
+            "           where b3.item.id = ?1 and b3.start > ?2))")
+    List<Booking> findLastAndNearFutureBookingsByItemId(long itemId, LocalDateTime now, Sort sort);
 
     // Поиск всех бронирований заказчика
     Iterable<Booking> findAllByBookerIdOrderByStartDesc(long bookerId); //ALL
@@ -45,9 +45,8 @@ public interface BookingRepository extends CrudRepository<Booking, Long> {
             "join b.booker as br " +
             "where br.id = ?1 " +
             "and b.start <= ?2" +
-            "and b.end >= ?2 " +
-            "order by b.start desc")
-    Iterable<Booking> findAllBookerCurrentBookings(long bookerId, LocalDateTime now); //Current
+            "and b.end >= ?2 ")
+    Iterable<Booking> findAllBookerCurrentBookings(long bookerId, LocalDateTime now, Sort sort); //Current
 
     Iterable<Booking> findAllByBookerIdAndEndBeforeOrderByStartDesc(long bookerId, LocalDateTime now); //Past
 
@@ -65,9 +64,8 @@ public interface BookingRepository extends CrudRepository<Booking, Long> {
             "join b.item as i " +
             "where i.owner.id = ?1 " +
             "and b.start <= ?2" +
-            "and b.end >= ?2 " +
-            "order by b.start desc")
-    Iterable<Booking> findAllOwnerCurrentBookings(long bookerId, LocalDateTime now); //Current
+            "and b.end >= ?2 ")
+    Iterable<Booking> findAllOwnerCurrentBookings(long bookerId, LocalDateTime now, Sort sort); //Current
 
     Iterable<Booking> findAllByItemOwnerIdAndEndBeforeOrderByStartDesc(long bookerId, LocalDateTime now); //Past
 

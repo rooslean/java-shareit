@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.service;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.Booking;
@@ -50,7 +51,8 @@ public class ItemServiceImpl implements ItemService {
         ItemDto itemDto;
         List<Booking> bookings;
         if (Objects.equals(item.getOwner().getId(), userId)) {
-            bookings = bookingRepository.findLastAndNearFutureBookingsByItemId(itemId, LocalDateTime.now());
+            Sort sort = Sort.by("start").ascending();
+            bookings = bookingRepository.findLastAndNearFutureBookingsByItemId(itemId, LocalDateTime.now(), sort);
         } else {
             bookings = new ArrayList<>();
         }
@@ -65,7 +67,8 @@ public class ItemServiceImpl implements ItemService {
         List<Item> items = itemRepository.findByOwnerIdOrderById(ownerId);
         List<ItemDto> itemsWithBookings = new ArrayList<>();
         for (Item item : items) {
-            List<Booking> bookings = bookingRepository.findLastAndNearFutureBookingsByItemId(item.getId(), LocalDateTime.now());
+            Sort sort = Sort.by("start").ascending();
+            List<Booking> bookings = bookingRepository.findLastAndNearFutureBookingsByItemId(item.getId(), LocalDateTime.now(), sort);
             List<CommentDto> comments = CommentMapper.mapToCommentDto(commentRepository.findByItemIdOrderByCreated(item.getId()));
             ItemDto itemDtoWithBookings = ItemMapper.mapToItemDtoWithBookings(item, bookings, comments);
             itemsWithBookings.add(itemDtoWithBookings);
