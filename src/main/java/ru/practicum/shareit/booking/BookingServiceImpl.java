@@ -131,7 +131,7 @@ public class BookingServiceImpl implements BookingService {
     private void validateBookingPeriod(NewBookingDto newBookingDto) {
         LocalDateTime start = newBookingDto.getStart();
         LocalDateTime end = newBookingDto.getEnd();
-        if (start.isEqual(end) || start.isAfter(end)) {
+        if (!start.isBefore(end)) {
             throw new ObjectNotValidException("Дата начала не может быть равна или позже даты конца");
         }
     }
