@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -149,10 +150,10 @@ public class BookingServiceImpl implements BookingService {
     }
 
     private User doesUserExist(long userId) {
-        User user = userRepository.getUserById(userId);
-        if (user == null) {
+        Optional<User> user = userRepository.findById(userId);
+        if (user.isEmpty()) {
             throw new ObjectNotFoundException();
         }
-        return user;
+        return user.get();
     }
 }

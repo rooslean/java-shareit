@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -87,11 +88,11 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto addItem(Long ownerId, ItemDto itemDto) {
         isValidForCreation(itemDto);
-        User owner = userRepository.getUserById(ownerId);
-        if (owner == null) {
+        Optional<User> owner = userRepository.findById(ownerId);
+        if (owner.isEmpty()) {
             throw new ObjectNotFoundException("Пользователь", ownerId);
         }
-        Item item = ItemMapper.mapItemDtoToItem(itemDto, owner);
+        Item item = ItemMapper.mapItemDtoToItem(itemDto, owner.get());
         itemDto = ItemMapper.mapItemToItemDto(itemRepository.save(item));
         log.info("Предмет с идентификатором {} был добавлен для пользователя {} был создан", item.getId(), ownerId);
         return itemDto;
@@ -101,23 +102,23 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto updateItem(Long itemId, Long ownerId, ItemDto itemDto) {
         isValidForUpdate(itemDto);
-        User owner = userRepository.getUserById(ownerId);
-        if (owner == null) {
+        Optional<User> owner = userRepository.findById(ownerId);
+        if (owner.isEmpty()) {
             throw new ObjectNotFoundException("Пользователь", ownerId);
         }
         Item item = itemRepository.getItemById(itemId);
         if (item == null) {
             throw new ObjectNotFoundException("Предмет", itemId);
         }
-        if (!Objects.equals(owner.getId(), item.getOwner().getId())) {
+        if (!Objects.equals(owner.get().getId(), item.getOwner().getId())) {
             throw new NoRightsForUpdateException();
         }
-        User newOwner = Objects.equals(ownerId, itemDto.getOwnerId()) || itemDto.getOwnerId() == null
-                ? owner : userRepository.getUserById(itemDto.getOwnerId());
-        if (newOwner == null) {
+        Optional<User> newOwner = Objects.equals(ownerId, itemDto.getOwnerId()) || itemDto.getOwnerId() == null
+                ? owner : userRepository.findById(itemDto.getOwnerId());
+        if (newOwner.isEmpty()) {
             throw new ObjectNotFoundException("Пользователь", ownerId);
         }
-        ItemMapper.mapItemDtoToItemForUpdate(itemDto, item, newOwner);
+        ItemMapper.mapItemDtoToItemForUpdate(itemDto, item, newOwner.get());
         itemDto = ItemMapper.mapItemToItemDto(itemRepository.save(item));
         log.info("Данные предмета с идентификатором {} были обновлены", item.getId());
         return itemDto;
@@ -130,8 +131,8 @@ public class ItemServiceImpl implements ItemService {
         if (item == null) {
             throw new ObjectNotFoundException();
         }
-        User user = userRepository.getUserById(userId);
-        if (user == null) {
+        Optional<User> user = userRepository.findById(userId);
+        if (user.isEmpty()) {
             throw new ObjectNotFoundException();
         }
         List<Booking> bookings = bookingRepository.findByItemIdAndBookerIdAndStatusNotAndEndBefore(
@@ -139,7 +140,7 @@ public class ItemServiceImpl implements ItemService {
         if (bookings.isEmpty()) {
             throw new BadRequestException("Нельзя оставить комментарий без бронирования");
         }
-        Comment comment = commentRepository.save(CommentMapper.mapToComment(commentDto, item, user));
+        Comment comment = commentRepository.save(CommentMapper.mapToComment(commentDto, item, user.get()));
         return CommentMapper.mapToCommentDto(comment);
     }
 

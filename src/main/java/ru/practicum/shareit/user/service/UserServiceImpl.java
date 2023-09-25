@@ -12,6 +12,7 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,11 +32,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto getUserById(Long userId) {
-        User user = userRepository.getUserById(userId);
-        if (user == null) {
+        Optional<User> user = userRepository.findById(userId);
+        if (user.isEmpty()) {
             throw new ObjectNotFoundException("Пользователь", userId);
         }
-        return UserMapper.mapUserToUserDto(user);
+        return UserMapper.mapUserToUserDto(user.get());
     }
 
     @Transactional
@@ -52,13 +53,13 @@ public class UserServiceImpl implements UserService {
     public UserDto updateUser(Long userId, UserDto userDto) {
         isValidForUpdate(userDto);
         userDto.setId(userId);
-        User user = userRepository.getUserById(userDto.getId());
-        if (userDto.getId() == null || user == null) {
+        Optional<User> user = userRepository.findById(userDto.getId());
+        if (userDto.getId() == null || user.isEmpty()) {
             throw new ObjectNotFoundException("Пользователь", userDto.getId());
         }
-        UserMapper.mapUserDtoToUserForUpdate(userDto, user);
-        userDto = UserMapper.mapUserToUserDto(userRepository.save(user));
-        log.info("Данные пользователя с идентификатором {} были обновлены", user.getId());
+        UserMapper.mapUserDtoToUserForUpdate(userDto, user.get());
+        userDto = UserMapper.mapUserToUserDto(userRepository.save(user.get()));
+        log.info("Данные пользователя с идентификатором {} были обновлены", user.get().getId());
         return userDto;
     }
 
