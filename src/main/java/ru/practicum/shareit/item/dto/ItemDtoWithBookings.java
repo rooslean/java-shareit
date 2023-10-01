@@ -21,9 +21,9 @@ public class ItemDtoWithBookings extends ItemDto {
     ShortBookingDto nextBooking;
     List<CommentDto> comments;
 
-    public ItemDtoWithBookings(Long id, Long ownerId, String name, String description, Boolean available,
+    public ItemDtoWithBookings(Long id, Long ownerId, Long requestId, String name, String description, Boolean available,
                                ShortBookingDto lastBooking, ShortBookingDto nextBooking, List<CommentDto> comments) {
-        super(id, ownerId, name, description, available);
+        super(id, ownerId, requestId, name, description, available);
         this.lastBooking = lastBooking;
         this.nextBooking = nextBooking;
         this.comments = comments;

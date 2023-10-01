@@ -20,6 +20,8 @@ import ru.practicum.shareit.item.comments.CommentRepository;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.request.ItemRequest;
+import ru.practicum.shareit.request.ItemRequestRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
@@ -43,6 +45,7 @@ public class ItemServiceImpl implements ItemService {
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
+    private final ItemRequestRepository requestRepository;
 
 
     @Override
@@ -100,7 +103,12 @@ public class ItemServiceImpl implements ItemService {
         if (owner.isEmpty()) {
             throw new ObjectNotFoundException("Пользователь", ownerId);
         }
-        Item item = ItemMapper.mapItemDtoToItem(itemDto, owner.get());
+        ItemRequest itemRequest = null;
+        if (itemDto.getRequestId() != null) {
+            itemRequest = requestRepository.findById(itemDto.getRequestId())
+                    .orElseThrow(ObjectNotFoundException::new);
+        }
+        Item item = ItemMapper.mapItemDtoToItem(itemDto, owner.get(), itemRequest);
         itemDto = ItemMapper.mapItemToItemDto(itemRepository.save(item));
         log.info("Предмет с идентификатором {} был добавлен для пользователя {} был создан", item.getId(), ownerId);
         return itemDto;

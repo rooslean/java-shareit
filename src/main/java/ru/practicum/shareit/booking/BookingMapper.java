@@ -6,6 +6,7 @@ import ru.practicum.shareit.booking.dto.ShortBookingDto;
 import ru.practicum.shareit.item.ItemMapper;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.user.UserMapper;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
@@ -45,11 +46,11 @@ public class BookingMapper {
         return bookingsDto;
     }
 
-    public static Booking mapToBooking(BookingDto bookingDto, UserDto userDto, ItemDto itemDto) {
+    public static Booking mapToBooking(BookingDto bookingDto, UserDto userDto, ItemDto itemDto, ItemRequest itemRequest) {
         return Booking.builder()
                 .id(bookingDto.getId())
                 .booker(UserMapper.mapUserDtoToUser(userDto))
-                .item(ItemMapper.mapItemDtoToItem(itemDto, null))
+                .item(ItemMapper.mapItemDtoToItem(itemDto, null, itemRequest))
                 .start(bookingDto.getStart())
                 .end(bookingDto.getEnd())
                 .status(bookingDto.getStatus())

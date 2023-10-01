@@ -13,13 +13,23 @@ CREATE TABLE IF NOT EXISTS users (
   CONSTRAINT UQ_USER_EMAIL UNIQUE (email)
 );
 
+CREATE TABLE IF NOT EXISTS requests (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_id BIGINT,
+    description VARCHAR(1000),
+    created timestamp without time zone,
+    CONSTRAINT fk_requests_to_bookers FOREIGN KEY(user_id) REFERENCES users(id)
+);
+
 CREATE TABLE IF NOT EXISTS items (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     user_id BIGINT,
+    request_id BIGINT,
     name VARCHAR(255),
     description VARCHAR(5000),
     available BOOLEAN DEFAULT FALSE,
-    CONSTRAINT fk_items_to_users FOREIGN KEY(user_id) REFERENCES users(id)
+    CONSTRAINT fk_items_to_users FOREIGN KEY(user_id) REFERENCES users(id),
+    CONSTRAINT fk_items_to_requests FOREIGN KEY(request_id) REFERENCES requests(id)
 );
 
 CREATE TABLE IF NOT EXISTS bookings (

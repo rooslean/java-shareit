@@ -5,6 +5,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.item.model.Item;
 
+import java.util.Collection;
 import java.util.List;
 
 @Repository
@@ -20,4 +21,6 @@ public interface ItemRepository extends CrudRepository<Item, Long> {
             " (UPPER(i.name) like UPPER(concat('%', ?1,'%'))" +
             " or UPPER(i.description) like UPPER(concat('%', ?1, '%')))")
     List<Item> findByNameOrDescription(String searchPhrase);
+
+    List<Item> findByRequestIdIn(Collection<Long> requestIds);
 }

@@ -16,6 +16,7 @@ import lombok.experimental.FieldDefaults;
 public class ItemDto {
     Long id;
     Long ownerId;
+    Long requestId;
     String name;
     String description;
     Boolean available;
