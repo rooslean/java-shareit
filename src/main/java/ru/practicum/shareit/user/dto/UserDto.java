@@ -6,21 +6,16 @@ import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
 import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 
 @Data
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserDto {
-    /*
-     * А эти аннотации мешали при обновлении объекта
-     * Передавалось только имя и из-за этого бэд реквест падал, так как не было мейла
-     * Вот и решил эти закомментировать, оставить только аннотацию мейла,
-     * А для остального в сервисах методы с валидацией сделать
-     * */
     Long id;
-    //        @NotBlank
+    @NotBlank(groups = NewUser.class)
     String name;
-    @Email
-//    @NotBlank
+    @Email(groups = {NewUser.class, ExistUser.class})
+    @NotBlank(groups = NewUser.class)
     String email;
 }
