@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.service;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -69,8 +70,15 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> findItemsByOwnerId(Long ownerId) {
-        List<Item> items = itemRepository.findByOwnerIdOrderById(ownerId);
+    public List<ItemDto> findItemsByOwnerId(Long ownerId, int from, int size) {
+        List<Item> items;
+        if (from < 0 || size < 1) {
+            throw new BadRequestException("Неверно выбрана пагинация");
+        } else {
+            PageRequest page = PageRequest.of(from > 0 ? from / size : 0, size);
+            items = itemRepository.findByOwnerIdOrderById(ownerId, page)
+                    .getContent();
+        }
         List<ItemDto> itemsWithBookings;
         Sort sort = Sort.by("start").ascending();
         Collection<Long> itemIds = items.stream().map(Item::getId).collect(Collectors.toSet());
@@ -85,11 +93,16 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> searchItemsByPhrase(String searchPhrase) {
+    public List<ItemDto> searchItemsByPhrase(String searchPhrase, int from, int size) {
         if (searchPhrase == null || searchPhrase.trim().isEmpty()) {
             return Collections.emptyList();
         }
-        return itemRepository.findByNameOrDescription(searchPhrase)
+        if (from < 0 || size < 1) {
+            throw new BadRequestException("Неверно выбрана пагинация");
+        }
+        PageRequest page = PageRequest.of(from > 0 ? from / size : 0, size);
+
+        return itemRepository.findByNameOrDescription(searchPhrase, page)
                 .stream()
                 .map(ItemMapper::mapItemToItemDto)
                 .collect(Collectors.toList());

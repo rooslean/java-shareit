@@ -30,13 +30,17 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemDto> findItemsByOwnerId(@RequestHeader("X-Sharer-User-Id") Long userId) {
-        return itemService.findItemsByOwnerId(userId);
+    public List<ItemDto> findItemsByOwnerId(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                            @RequestParam(defaultValue = "0") int from,
+                                            @RequestParam(defaultValue = "10") int size) {
+        return itemService.findItemsByOwnerId(userId, from, size);
     }
 
     @GetMapping("/search")
-    public List<ItemDto> searchItemsByPhrase(@RequestParam("text") String searchPhrase) {
-        return itemService.searchItemsByPhrase(searchPhrase);
+    public List<ItemDto> searchItemsByPhrase(@RequestParam("text") String searchPhrase,
+                                             @RequestParam(defaultValue = "0") int from,
+                                             @RequestParam(defaultValue = "10") int size) {
+        return itemService.searchItemsByPhrase(searchPhrase, from, size);
     }
 
     @PostMapping
