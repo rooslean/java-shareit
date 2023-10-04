@@ -53,7 +53,7 @@ public class ItemServiceImplIntegrationTest {
         ItemDto addedItemOne = service.addItem(createdUserOne.getId(), itemDtoOne);
         service.addItem(createdUserTwo.getId(), itemDtoTwo);
 
-        List<ItemDto> items = service.findItemsByOwnerId(1L, 0, 5);
+        List<ItemDto> items = service.findItemsByOwnerId(createdUserOne.getId(), 0, 5);
 
         assertThat(items, hasSize(1));
         assertThat(items, hasItem(allOf(
