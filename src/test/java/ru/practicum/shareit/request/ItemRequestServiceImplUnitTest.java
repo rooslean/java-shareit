@@ -33,6 +33,7 @@ public class ItemRequestServiceImplUnitTest {
     public void makeItemRequestService() {
         this.service = new ItemRequestServiceImpl(requestRepository, userRepository, itemRepository);
     }
+
     @Test
     void testAddRequestWrongUser() {
         ItemRequestDto itemRequestDto = ItemRequestDto.builder()

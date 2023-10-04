@@ -121,7 +121,7 @@ public class ItemServiceImplUnitTest {
 
 
         final ObjectNotFoundException exception = Assertions.assertThrows(ObjectNotFoundException.class,
-                () ->  service.getItemById(99L, 2L));
+                () -> service.getItemById(99L, 2L));
 
         assertThat(exception.getMessage(), equalTo("Предмет c id - 99 не найден"));
         Mockito.verify(itemRepository, Mockito.times(1))
@@ -430,7 +430,7 @@ public class ItemServiceImplUnitTest {
                 .thenReturn(Optional.of(commentator));
 //        Mockito.when(bookingRepository.findByItemIdAndBookerIdAndStatusNotAndEndBefore(1L, 2L,
 //                        BookingStatus.REJECTED, LocalDateTime.now()))
-    Mockito.when(bookingRepository.findByItemIdAndBookerIdAndStatusNotAndEndBefore(Mockito.anyLong(), Mockito.anyLong(),
+        Mockito.when(bookingRepository.findByItemIdAndBookerIdAndStatusNotAndEndBefore(Mockito.anyLong(), Mockito.anyLong(),
                         Mockito.any(BookingStatus.class), Mockito.any(LocalDateTime.class)))
                 .thenReturn(new ArrayList<>());
 
