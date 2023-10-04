@@ -10,6 +10,7 @@ import org.springframework.data.domain.Sort;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.BookingStatus;
 import ru.practicum.shareit.exception.BadRequestException;
+import ru.practicum.shareit.exception.NoRightsForUpdateException;
 import ru.practicum.shareit.exception.ObjectNotFoundException;
 import ru.practicum.shareit.exception.ObjectNotValidException;
 import ru.practicum.shareit.item.comments.CommentDto;
@@ -277,6 +278,34 @@ public class ItemServiceImplUnitTest {
         assertThat(exception.getMessage(), equalTo("Предмет c id - 1 не найден"));
     }
 
+    @Test
+    void testUpdateItemNoRightsForUpdate() {
+        ItemService service = makeItemService();
+        User owner = new User(1L, "Ken", "ken@test.ru");
+        User user = new User(2L, "Peter", "peter@test.ru");
+        Item item = new Item(1L, owner, null, "Пила", "Пилит", true);
+        Mockito.when(userRepository.findById(2L))
+                .thenReturn(Optional.of(user));
+        Mockito.when(itemRepository.getItemById(1L))
+                .thenReturn(item);
+
+        ItemDto itemDto = ItemDto.builder()
+                .name("Пила")
+                .description("Пилит")
+                .available(true)
+                .build();
+
+        final NoRightsForUpdateException exception = Assertions.assertThrows(NoRightsForUpdateException.class,
+                () -> service.updateItem(1L, 2L, itemDto));
+
+
+        Mockito.verify(userRepository, Mockito.times(1))
+                .findById(2L);
+        Mockito.verify(itemRepository, Mockito.times(1))
+                .getItemById(1L);
+
+        assertThat(exception.getMessage(), equalTo("У вас нет прав изменять этот объект"));
+    }
     @Test
     void testUpdateItemNewOwnerNotFound() {
         ItemService service = makeItemService();
