@@ -38,7 +38,7 @@ import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.ArgumentMatchers.anyString;
 
 @ExtendWith(MockitoExtension.class)
@@ -79,6 +79,123 @@ public class ItemServiceImplUnitTest {
         Mockito.verify(itemRepository, Mockito.times(1))
                 .getItemById(1L);
         Mockito.verifyNoInteractions(bookingRepository);
+        Mockito.verify(commentRepository, Mockito.times(1))
+                .findByItemIdInOrderByCreated(Mockito.anyCollection());
+    }
+
+    @Test
+    void testGetItemByIdOkByUserWithOneBookingLast() {
+        ItemService service = makeItemService();
+        User owner = new User(1L, "Ken", "ken@test.ru");
+        User booker = new User(2L, "Barbie", "barbie@test.ru");
+        Item item = new Item(1L, owner, null, "Пила", "Пилит", true);
+        Booking lastBooking = new Booking(1L, booker, item, LocalDateTime.now().minusDays(4),
+                LocalDateTime.now().minusDays(3), BookingStatus.APPROVED);
+
+        Mockito
+                .when(itemRepository.getItemById(1L))
+                .thenReturn(new Item(1L,
+                        new User(1L, "Steve", "steve@test.com"),
+                        null, "Пила", "Пилит", true));
+        Mockito
+                .when(commentRepository.findByItemIdInOrderByCreated(Mockito.anyCollection()))
+                .thenReturn(new ArrayList<>());
+        Mockito
+                .when(bookingRepository.findLastAndNearFutureBookingsByItemIn(anySet(), Mockito.any(LocalDateTime.class), Mockito.any(Sort.class)))
+                .thenReturn(List.of(lastBooking));
+
+        ItemDto itemDto = service.getItemById(1L, 1L);
+
+        assertThat(itemDto.getId(), equalTo(1L));
+        assertThat(itemDto.getOwnerId(), equalTo(1L));
+        assertThat(itemDto.getRequestId(), nullValue());
+        assertThat(itemDto.getName(), equalTo("Пила"));
+        assertThat(itemDto.getDescription(), equalTo("Пилит"));
+        assertThat(itemDto.getAvailable(), equalTo(true));
+
+        Mockito.verify(itemRepository, Mockito.times(1))
+                .getItemById(1L);
+        Mockito.verify(bookingRepository, Mockito.times(1))
+                .findLastAndNearFutureBookingsByItemIn(anySet(), Mockito.any(LocalDateTime.class), Mockito.any(Sort.class));
+        Mockito.verify(commentRepository, Mockito.times(1))
+                .findByItemIdInOrderByCreated(Mockito.anyCollection());
+    }
+
+    @Test
+    void testGetItemByIdOkByUserWithOneBookingFuture() {
+        ItemService service = makeItemService();
+        User owner = new User(1L, "Ken", "ken@test.ru");
+        User booker = new User(2L, "Barbie", "barbie@test.ru");
+        Item item = new Item(1L, owner, null, "Пила", "Пилит", true);
+        Booking nextBooking = new Booking(1L, booker, item, LocalDateTime.now().plusDays(4),
+                LocalDateTime.now().plusDays(6), BookingStatus.APPROVED);
+
+        Mockito
+                .when(itemRepository.getItemById(1L))
+                .thenReturn(new Item(1L,
+                        new User(1L, "Steve", "steve@test.com"),
+                        null, "Пила", "Пилит", true));
+        Mockito
+                .when(commentRepository.findByItemIdInOrderByCreated(Mockito.anyCollection()))
+                .thenReturn(new ArrayList<>());
+        Mockito
+                .when(bookingRepository.findLastAndNearFutureBookingsByItemIn(anySet(), Mockito.any(LocalDateTime.class), Mockito.any(Sort.class)))
+                .thenReturn(List.of(nextBooking));
+
+        ItemDto itemDto = service.getItemById(1L, 1L);
+
+        assertThat(itemDto.getId(), equalTo(1L));
+        assertThat(itemDto.getOwnerId(), equalTo(1L));
+        assertThat(itemDto.getRequestId(), nullValue());
+        assertThat(itemDto.getName(), equalTo("Пила"));
+        assertThat(itemDto.getDescription(), equalTo("Пилит"));
+        assertThat(itemDto.getAvailable(), equalTo(true));
+
+        Mockito.verify(itemRepository, Mockito.times(1))
+                .getItemById(1L);
+        Mockito.verify(bookingRepository, Mockito.times(1))
+                .findLastAndNearFutureBookingsByItemIn(anySet(), Mockito.any(LocalDateTime.class), Mockito.any(Sort.class));
+        Mockito.verify(commentRepository, Mockito.times(1))
+                .findByItemIdInOrderByCreated(Mockito.anyCollection());
+    }
+
+    @Test
+    void testGetItemByIdOkByUserWithTwoBooking() {
+        ItemService service = makeItemService();
+        User owner = new User(1L, "Ken", "ken@test.ru");
+        User booker = new User(2L, "Barbie", "barbie@test.ru");
+        Item item = new Item(1L, owner, null, "Пила", "Пилит", true);
+        Booking lastBooking = new Booking(1L, booker, item, LocalDateTime.now().minusDays(4),
+                LocalDateTime.now().minusDays(3), BookingStatus.APPROVED);
+        Booking nextBooking = new Booking(1L, booker, item, LocalDateTime.now().plusDays(3),
+                LocalDateTime.now().plusDays(6), BookingStatus.APPROVED);
+
+        Mockito
+                .when(itemRepository.getItemById(1L))
+                .thenReturn(new Item(1L,
+                        new User(1L, "Steve", "steve@test.com"),
+                        null, "Пила", "Пилит", true));
+        Mockito
+                .when(commentRepository.findByItemIdInOrderByCreated(Mockito.anyCollection()))
+                .thenReturn(new ArrayList<>());
+        Mockito
+                .when(bookingRepository.findLastAndNearFutureBookingsByItemIn(anySet(), Mockito.any(LocalDateTime.class), Mockito.any(Sort.class)))
+                .thenReturn(List.of(lastBooking, nextBooking));
+
+
+        ItemDto itemDto = service.getItemById(1L, 1L);
+
+        assertThat(itemDto.getId(), equalTo(1L));
+        assertThat(itemDto.getOwnerId(), equalTo(1L));
+        assertThat(itemDto.getRequestId(), nullValue());
+        assertThat(itemDto.getName(), equalTo("Пила"));
+        assertThat(itemDto.getDescription(), equalTo("Пилит"));
+        assertThat(itemDto.getAvailable(), equalTo(true));
+
+        Mockito.verify(itemRepository, Mockito.times(1))
+                .getItemById(1L);
+        Mockito.verify(bookingRepository, Mockito.times(1))
+                .findLastAndNearFutureBookingsByItemIn(anySet(), Mockito.any(LocalDateTime.class), Mockito.any(Sort.class));
         Mockito.verify(commentRepository, Mockito.times(1))
                 .findByItemIdInOrderByCreated(Mockito.anyCollection());
     }
@@ -352,16 +469,22 @@ public class ItemServiceImplUnitTest {
     void testUpdateItemOk() {
         ItemService service = makeItemService();
         User owner = new User(1L, "Ken", "ken@test.ru");
+        User newOwner = new User(2L, "Barbie", "barbie@test.ru");
         Item item = new Item(1L, owner, null, "Пила", "Пилит", true);
-        Item updatedItem = new Item(1L, owner, null, "Пила", "Пилит просто супер", true);
+        Item updatedItem = new Item(1L, newOwner, null, "Бензопила", "Пилит просто супер", false);
         Mockito.when(userRepository.findById(1L))
                 .thenReturn(Optional.of(owner));
+        Mockito.when(userRepository.findById(2L))
+                .thenReturn(Optional.of(newOwner));
         Mockito.when(itemRepository.getItemById(1L))
                 .thenReturn(item);
         Mockito.when(itemRepository.save(updatedItem))
                 .thenReturn(updatedItem);
         ItemDto itemDto = ItemDto.builder()
+                .name("Бензопила")
                 .description("Пилит просто супер")
+                .available(false)
+                .ownerId(2L)
                 .build();
 
 
@@ -369,6 +492,8 @@ public class ItemServiceImplUnitTest {
 
         Mockito.verify(userRepository, Mockito.times(1))
                 .findById(1L);
+        Mockito.verify(userRepository, Mockito.times(1))
+                .findById(2L);
         Mockito.verify(itemRepository, Mockito.times(1))
                 .getItemById(1L);
         Mockito.verify(itemRepository, Mockito.times(1))
@@ -420,7 +545,7 @@ public class ItemServiceImplUnitTest {
         ItemService service = makeItemService();
         User owner = new User(1L, "Ken", "ken@test.ru");
         Item item = new Item(1L, owner, null, "Пила", "Пилит", true);
-        Mockito.when(itemRepository.findByNameOrDescription(anyString(), any(PageRequest.class)))
+        Mockito.when(itemRepository.findByNameOrDescription(anyString(), Mockito.any(PageRequest.class)))
                 .thenReturn(new PageImpl<>(List.of(item)));
 
         List<ItemDto> items = service.searchItemsByPhrase("Пилит", 0, 1);
@@ -434,7 +559,7 @@ public class ItemServiceImplUnitTest {
         )));
 
         Mockito.verify(itemRepository, Mockito.times(1))
-                .findByNameOrDescription(anyString(), any(PageRequest.class));
+                .findByNameOrDescription(anyString(), Mockito.any(PageRequest.class));
     }
 
     @Test
@@ -543,7 +668,7 @@ public class ItemServiceImplUnitTest {
                         Mockito.any(BookingStatus.class), Mockito.any(LocalDateTime.class)))
                 .thenReturn(List.of(booking));
         Mockito
-                .when(commentRepository.save(any(Comment.class)))
+                .when(commentRepository.save(Mockito.any(Comment.class)))
                 .thenReturn(comment);
 
         CommentDto commentDto = CommentDto.builder()
@@ -553,7 +678,7 @@ public class ItemServiceImplUnitTest {
 
         service.addComment(1L, 2L, commentDto);
         Mockito.verify(commentRepository, Mockito.times(1))
-                .save(any(Comment.class));
+                .save(Mockito.any(Comment.class));
         Mockito.verify(bookingRepository, Mockito.times(1))
                 .findByItemIdAndBookerIdAndStatusNotAndEndBefore(Mockito.anyLong(), Mockito.anyLong(),
                         Mockito.any(BookingStatus.class), Mockito.any(LocalDateTime.class));

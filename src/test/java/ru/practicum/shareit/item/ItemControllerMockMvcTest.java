@@ -33,11 +33,12 @@ public class ItemControllerMockMvcTest {
     private MockMvc mvc;
 
     private final DateTimeFormatter formatter =
-            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS");
+            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+    private final LocalDateTime created = LocalDateTime.parse(LocalDateTime.now().format(formatter));
     private final ItemDto itemDto = new ItemDto(1L, 1L, null,
             "Бластер", "Делает пиу пиу", true);
     private final CommentDto commentDto =
-            new CommentDto(1L, "StarLord", "Вау, пиу пиу", LocalDateTime.now());
+            new CommentDto(1L, "StarLord", "Вау, пиу пиу", created);
 
     @Test
     void testAddItem() throws Exception {
