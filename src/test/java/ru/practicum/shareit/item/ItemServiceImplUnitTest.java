@@ -6,13 +6,17 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.BookingStatus;
 import ru.practicum.shareit.exception.BadRequestException;
 import ru.practicum.shareit.exception.NoRightsForUpdateException;
 import ru.practicum.shareit.exception.ObjectNotFoundException;
 import ru.practicum.shareit.exception.ObjectNotValidException;
+import ru.practicum.shareit.item.comments.Comment;
 import ru.practicum.shareit.item.comments.CommentDto;
 import ru.practicum.shareit.item.comments.CommentRepository;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -27,11 +31,15 @@ import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
+import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 
 @ExtendWith(MockitoExtension.class)
 public class ItemServiceImplUnitTest {
@@ -118,7 +126,7 @@ public class ItemServiceImplUnitTest {
 
         Mockito
                 .when(itemRepository.getItemById(Mockito.anyLong()))
-                .thenThrow(new ObjectNotFoundException("Предмет", 99L));
+                .thenReturn(null);
 
 
         final ObjectNotFoundException exception = Assertions.assertThrows(ObjectNotFoundException.class,
@@ -306,6 +314,7 @@ public class ItemServiceImplUnitTest {
 
         assertThat(exception.getMessage(), equalTo("У вас нет прав изменять этот объект"));
     }
+
     @Test
     void testUpdateItemNewOwnerNotFound() {
         ItemService service = makeItemService();
@@ -393,8 +402,39 @@ public class ItemServiceImplUnitTest {
         assertThat(exception.getMessage(), equalTo("Неверно выбрана пагинация"));
 
         Mockito.verifyNoInteractions(itemRepository);
-        Mockito.verifyNoInteractions(bookingRepository);
-        Mockito.verifyNoInteractions(commentRepository);
+    }
+
+    @Test
+    void searchItemsByPhraseEmptyPhrase() {
+        ItemService service = makeItemService();
+
+
+        List<ItemDto> items = service.searchItemsByPhrase("", 0, 1);
+        assertThat(items, hasSize(0));
+
+        Mockito.verifyNoInteractions(itemRepository);
+    }
+
+    @Test
+    void searchItemsByPhraseOk() {
+        ItemService service = makeItemService();
+        User owner = new User(1L, "Ken", "ken@test.ru");
+        Item item = new Item(1L, owner, null, "Пила", "Пилит", true);
+        Mockito.when(itemRepository.findByNameOrDescription(anyString(), any(PageRequest.class)))
+                .thenReturn(new PageImpl<>(List.of(item)));
+
+        List<ItemDto> items = service.searchItemsByPhrase("Пилит", 0, 1);
+        assertThat(items, hasSize(1));
+        assertThat(items, hasItem(allOf(
+                hasProperty("id", notNullValue()),
+                hasProperty("ownerId", equalTo(item.getOwner().getId())),
+                hasProperty("name", equalTo(item.getName())),
+                hasProperty("description", equalTo(item.getDescription())),
+                hasProperty("available", equalTo(item.getAvailable()))
+        )));
+
+        Mockito.verify(itemRepository, Mockito.times(1))
+                .findByNameOrDescription(anyString(), any(PageRequest.class));
     }
 
     @Test
@@ -457,8 +497,6 @@ public class ItemServiceImplUnitTest {
                 .thenReturn(item);
         Mockito.when(userRepository.findById(2L))
                 .thenReturn(Optional.of(commentator));
-//        Mockito.when(bookingRepository.findByItemIdAndBookerIdAndStatusNotAndEndBefore(1L, 2L,
-//                        BookingStatus.REJECTED, LocalDateTime.now()))
         Mockito.when(bookingRepository.findByItemIdAndBookerIdAndStatusNotAndEndBefore(Mockito.anyLong(), Mockito.anyLong(),
                         Mockito.any(BookingStatus.class), Mockito.any(LocalDateTime.class)))
                 .thenReturn(new ArrayList<>());
@@ -480,6 +518,49 @@ public class ItemServiceImplUnitTest {
                 .getItemById(1L);
 
         assertThat(exception.getMessage(), equalTo("Нельзя оставить комментарий без бронирования"));
+    }
+
+    @Test
+    void addCommentBookingOk() {
+        ItemService service = makeItemService();
+
+        User owner = new User(1L, "Ken", "ken@test.ru");
+        User booker = new User(2L, "Barbie", "barbie@test.ru");
+        Item item = new Item(1L, owner, null, "Пила", "Пилит", true);
+        User commentator = new User(2L, "Джон Крамер", "john@saw.ru");
+        Booking booking = new Booking(1L, booker, item, LocalDateTime.now().minusDays(4),
+                LocalDateTime.now().minusDays(3), BookingStatus.APPROVED);
+        Comment comment = new Comment(1L, item, booker, "Супер", LocalDateTime.now());
+
+        Mockito
+                .when(itemRepository.getItemById(1L))
+                .thenReturn(item);
+        Mockito
+                .when(userRepository.findById(2L))
+                .thenReturn(Optional.of(commentator));
+        Mockito
+                .when(bookingRepository.findByItemIdAndBookerIdAndStatusNotAndEndBefore(Mockito.anyLong(), Mockito.anyLong(),
+                        Mockito.any(BookingStatus.class), Mockito.any(LocalDateTime.class)))
+                .thenReturn(List.of(booking));
+        Mockito
+                .when(commentRepository.save(any(Comment.class)))
+                .thenReturn(comment);
+
+        CommentDto commentDto = CommentDto.builder()
+                .text("И правда отлично пилит")
+                .build();
+
+
+        service.addComment(1L, 2L, commentDto);
+        Mockito.verify(commentRepository, Mockito.times(1))
+                .save(any(Comment.class));
+        Mockito.verify(bookingRepository, Mockito.times(1))
+                .findByItemIdAndBookerIdAndStatusNotAndEndBefore(Mockito.anyLong(), Mockito.anyLong(),
+                        Mockito.any(BookingStatus.class), Mockito.any(LocalDateTime.class));
+        Mockito.verify(userRepository, Mockito.times(1))
+                .findById(2L);
+        Mockito.verify(itemRepository, Mockito.times(1))
+                .getItemById(1L);
     }
 
     private ItemService makeItemService() {
