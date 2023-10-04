@@ -29,8 +29,4 @@ public class User {
     String name;
     @Column(unique = true)
     String email;
-
-    public User(Long id) {
-        this.id = id;
-    }
 }

@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import ru.practicum.shareit.item.dto.ItemDto;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
@@ -19,8 +18,4 @@ import java.util.List;
 public class ItemRequestDtoWithItems extends ItemRequestDto {
     List<ItemDto> items;
 
-    public ItemRequestDtoWithItems(Long id, String description, LocalDateTime created, List<ItemDto> items) {
-        super(id, description, created);
-        this.items = items;
-    }
 }
