@@ -27,6 +27,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     private final ItemRequestRepository requestRepository;
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
+
     @Override
     @Transactional
     public ItemRequestDto addRequest(ItemRequestDto itemRequestDto, Long userId) {
@@ -43,8 +44,8 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         Sort sort = Sort.by("created").descending();
         List<ItemRequest> itemRequests = requestRepository.findByRequesterId(userId, sort);
         Map<Long, List<Item>> items = itemRepository.findByRequestIdIn(itemRequests.stream()
-                .map(ItemRequest::getId)
-                .collect(Collectors.toSet()))
+                        .map(ItemRequest::getId)
+                        .collect(Collectors.toSet()))
                 .stream()
                 .collect(Collectors.groupingBy(i -> i.getRequest().getId()));
         return ItemRequestMapper.mapToItemRequestDto(itemRequests, items);

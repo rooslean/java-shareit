@@ -207,6 +207,7 @@ public class BookingServiceImplUnitTest {
         Mockito.verify(itemRepository, Mockito.times(1))
                 .getItemById(1L);
     }
+
     @Test
     void testAddBookingItemOk() {
         BookingService service = getBookingService();

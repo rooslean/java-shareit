@@ -84,7 +84,7 @@ public class BookingServiceImpl implements BookingService {
         if (from < 0 || size < 1) {
             throw new BadRequestException("Неверно выбрана пагинация");
         } else {
-             page = PageRequest.of(from > 0 ? from / size : 0, size);
+            page = PageRequest.of(from > 0 ? from / size : 0, size);
         }
         switch (state) {
             case ALL:

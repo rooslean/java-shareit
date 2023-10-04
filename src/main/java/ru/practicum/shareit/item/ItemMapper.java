@@ -31,7 +31,6 @@ public class ItemMapper {
     }
 
 
-
     public static ItemDto mapToItemDtoWithBookings(Item item, List<Booking> bookings, List<CommentDto> comments) {
         ShortBookingDto lastBooking = null;
         ShortBookingDto nextBooking = null;
