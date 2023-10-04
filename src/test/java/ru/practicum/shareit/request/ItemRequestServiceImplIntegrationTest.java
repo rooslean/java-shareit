@@ -52,4 +52,32 @@ public class ItemRequestServiceImplIntegrationTest {
                 hasProperty("description", equalTo(addedItemRequest.getDescription()))
         )));
     }
+
+    @Test
+    void testFindAllWithoutPages() {
+        UserDto userDtoOne = UserDto.builder()
+                .name("Roland")
+                .email("roland@test.ru")
+                .build();
+
+        UserDto userDtoTwo = UserDto.builder()
+                .name("Voland")
+                .email("voland@test.ru")
+                .build();
+        UserDto createdUserOne = userService.createUser(userDtoOne);
+        userService.createUser(userDtoTwo);
+
+        ItemRequestDto itemRequestDto = ItemRequestDto.builder()
+                .description("Мне надо штуку, чтобы пилить можно было")
+                .build();
+        ItemRequestDto addedItemRequest = requestService.addRequest(itemRequestDto, createdUserOne.getId());
+
+        List<ItemRequestDto> itemRequests = requestService.findAll(createdUserOne.getId());
+
+        assertThat(itemRequests, hasSize(1));
+        assertThat(itemRequests, hasItem(allOf(
+                hasProperty("id", notNullValue()),
+                hasProperty("description", equalTo(addedItemRequest.getDescription()))
+        )));
+    }
 }
