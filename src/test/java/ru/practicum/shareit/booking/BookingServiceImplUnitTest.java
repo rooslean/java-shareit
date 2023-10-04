@@ -235,16 +235,12 @@ public class BookingServiceImplUnitTest {
                 .when(bookingRepository.findByItemIdAndEndAfter(anyLong(), any()))
                 .thenReturn(List.of(notCrossedbooking));
 
-//        final BadRequestException exception = Assertions.assertThrows(BadRequestException.class,
-//                () -> service.add(newBookingDto, 2L));
-
         BookingDto bookingDto = service.add(newBookingDto, 2L);
-//        assertThat(exception.getMessage(), equalTo("Предмет недоступен для бронирования"));
         assertThat(bookingDto.getId(), equalTo(booking.getId()));
         Mockito.verify(userRepository, Mockito.times(1))
                 .findById(2L);
-        Mockito.verify(bookingRepository, Mockito.times(1)).
-                save(any());
+        Mockito.verify(bookingRepository, Mockito.times(1))
+                        .save(any());
         Mockito.verify(itemRepository, Mockito.times(1))
                 .getItemById(1L);
     }
