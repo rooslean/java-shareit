@@ -33,17 +33,17 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
 
 @ExtendWith(MockitoExtension.class)
-public class ItemServiceImplTest {
+public class ItemServiceImplUnitTest {
     @Mock
-    ItemRepository itemRepository;
+    private ItemRepository itemRepository;
     @Mock
-    UserRepository userRepository;
+    private UserRepository userRepository;
     @Mock
-    BookingRepository bookingRepository;
+    private BookingRepository bookingRepository;
     @Mock
-    CommentRepository commentRepository;
+    private CommentRepository commentRepository;
     @Mock
-    ItemRequestRepository requestRepository;
+    private ItemRequestRepository requestRepository;
 
     @Test
     void testGetItemByIdOkByUser() {

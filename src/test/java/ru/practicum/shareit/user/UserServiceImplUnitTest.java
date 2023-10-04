@@ -20,9 +20,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
 @ExtendWith(MockitoExtension.class)
-public class UserServiceImplTest {
+public class UserServiceImplUnitTest {
     @Mock
-    UserRepository mockUserRepository;
+    private UserRepository mockUserRepository;
 
     @Test
     void testUpdateUserWithValidData() {
