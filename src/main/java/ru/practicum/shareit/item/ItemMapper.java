@@ -13,7 +13,7 @@ import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -53,8 +53,8 @@ public class ItemMapper {
     public static List<ItemDto> mapToItemDtoWithBookings(List<Item> items, Map<Long,
             List<Booking>> bookings, Map<Long, List<Comment>> comments) {
         return items.stream()
-                .map(i -> ItemMapper.mapToItemDtoWithBookings(i, bookings.getOrDefault(i.getId(), new ArrayList<>()),
-                        CommentMapper.mapToCommentDto(comments.getOrDefault(i.getId(), new ArrayList<>()))))
+                .map(i -> ItemMapper.mapToItemDtoWithBookings(i, bookings.getOrDefault(i.getId(), Collections.emptyList()),
+                        CommentMapper.mapToCommentDto(comments.getOrDefault(i.getId(), Collections.emptyList()))))
                 .collect(Collectors.toList());
     }
 

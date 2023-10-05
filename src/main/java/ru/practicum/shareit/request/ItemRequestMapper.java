@@ -7,7 +7,7 @@ import ru.practicum.shareit.request.dto.ItemRequestDtoWithItems;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -25,13 +25,13 @@ public class ItemRequestMapper {
     public static List<ItemRequestDto> mapToItemRequestDto(List<ItemRequest> itemRequests, Map<Long, List<Item>> items) {
         return itemRequests.stream()
                 .map(req ->
-                        ItemRequestMapper.mapToItemRequestDto(req, items.getOrDefault(req.getId(), new ArrayList<>())))
+                        ItemRequestMapper.mapToItemRequestDto(req, items.getOrDefault(req.getId(), Collections.emptyList())))
                 .collect(Collectors.toList());
 
     }
 
     public static ItemRequestDto mapToItemRequestDto(ItemRequest itemRequest) {
-        return mapToItemRequestDto(itemRequest, new ArrayList<>());
+        return mapToItemRequestDto(itemRequest, Collections.emptyList());
     }
 
     public static ItemRequestDto mapToItemRequestDto(ItemRequest itemRequest, List<Item> items) {

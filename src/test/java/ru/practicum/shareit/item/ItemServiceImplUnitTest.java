@@ -30,7 +30,7 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -65,7 +65,7 @@ public class ItemServiceImplUnitTest {
                         null, "Пила", "Пилит", true));
         Mockito
                 .when(commentRepository.findByItemIdInOrderByCreated(Mockito.anyCollection()))
-                .thenReturn(new ArrayList<>());
+                .thenReturn(Collections.emptyList());
 
         ItemDto itemDto = service.getItemById(1L, 2L);
 
@@ -99,7 +99,7 @@ public class ItemServiceImplUnitTest {
                         null, "Пила", "Пилит", true));
         Mockito
                 .when(commentRepository.findByItemIdInOrderByCreated(Mockito.anyCollection()))
-                .thenReturn(new ArrayList<>());
+                .thenReturn(Collections.emptyList());
         Mockito
                 .when(bookingRepository.findLastAndNearFutureBookingsByItemIn(anySet(), Mockito.any(LocalDateTime.class), Mockito.any(Sort.class)))
                 .thenReturn(List.of(lastBooking));
@@ -137,7 +137,7 @@ public class ItemServiceImplUnitTest {
                         null, "Пила", "Пилит", true));
         Mockito
                 .when(commentRepository.findByItemIdInOrderByCreated(Mockito.anyCollection()))
-                .thenReturn(new ArrayList<>());
+                .thenReturn(Collections.emptyList());
         Mockito
                 .when(bookingRepository.findLastAndNearFutureBookingsByItemIn(anySet(), Mockito.any(LocalDateTime.class), Mockito.any(Sort.class)))
                 .thenReturn(List.of(nextBooking));
@@ -177,7 +177,7 @@ public class ItemServiceImplUnitTest {
                         null, "Пила", "Пилит", true));
         Mockito
                 .when(commentRepository.findByItemIdInOrderByCreated(Mockito.anyCollection()))
-                .thenReturn(new ArrayList<>());
+                .thenReturn(Collections.emptyList());
         Mockito
                 .when(bookingRepository.findLastAndNearFutureBookingsByItemIn(anySet(), Mockito.any(LocalDateTime.class), Mockito.any(Sort.class)))
                 .thenReturn(List.of(lastBooking, nextBooking));
@@ -212,10 +212,10 @@ public class ItemServiceImplUnitTest {
         Mockito
                 .when(bookingRepository.findLastAndNearFutureBookingsByItemIn(Mockito.anyCollection(),
                         Mockito.any(LocalDateTime.class), Mockito.any(Sort.class)))
-                .thenReturn(new ArrayList<>());
+                .thenReturn(Collections.emptyList());
         Mockito
                 .when(commentRepository.findByItemIdInOrderByCreated(Mockito.anyCollection()))
-                .thenReturn(new ArrayList<>());
+                .thenReturn(Collections.emptyList());
 
         ItemDtoWithBookings itemDto = (ItemDtoWithBookings) service.getItemById(1L, 1L);
 
@@ -624,7 +624,7 @@ public class ItemServiceImplUnitTest {
                 .thenReturn(Optional.of(commentator));
         Mockito.when(bookingRepository.findByItemIdAndBookerIdAndStatusNotAndEndBefore(Mockito.anyLong(), Mockito.anyLong(),
                         Mockito.any(BookingStatus.class), Mockito.any(LocalDateTime.class)))
-                .thenReturn(new ArrayList<>());
+                .thenReturn(Collections.emptyList());
 
         CommentDto commentDto = CommentDto.builder()
                 .text("И правда отлично пилит")

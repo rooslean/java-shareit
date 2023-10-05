@@ -27,7 +27,6 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -61,7 +60,7 @@ public class ItemServiceImpl implements ItemService {
             Sort sort = Sort.by("start").ascending();
             bookings = bookingRepository.findLastAndNearFutureBookingsByItemIn(Set.of(itemId), LocalDateTime.now(), sort);
         } else {
-            bookings = new ArrayList<>();
+            bookings = Collections.emptyList();
         }
         List<CommentDto> comments = CommentMapper.mapToCommentDto(commentRepository.findByItemIdInOrderByCreated(Set.of(itemId)));
         itemDto = ItemMapper.mapToItemDtoWithBookings(item, bookings, comments);

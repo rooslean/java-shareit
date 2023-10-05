@@ -240,7 +240,7 @@ public class BookingServiceImplUnitTest {
         Mockito.verify(userRepository, Mockito.times(1))
                 .findById(2L);
         Mockito.verify(bookingRepository, Mockito.times(1))
-                        .save(any());
+                .save(any());
         Mockito.verify(itemRepository, Mockito.times(1))
                 .getItemById(1L);
     }
