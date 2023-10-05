@@ -41,7 +41,7 @@ public interface BookingRepository extends CrudRepository<Booking, Long> {
     List<Booking> findLastAndNearFutureBookingsByItemIn(Collection<Long> itemIds, LocalDateTime now, Sort sort);
 
     // Поиск всех бронирований заказчика
-    Page<Booking> findAllByBookerIdOrderByStartDesc(long bookerId, Pageable page); //ALL
+    Page<Booking> findAllByBookerId(long bookerId, Pageable page); //ALL
 
     @Query("select b " +
             "from Booking b " +
@@ -51,16 +51,16 @@ public interface BookingRepository extends CrudRepository<Booking, Long> {
             "and b.end >= ?2 ")
     Page<Booking> findAllBookerCurrentBookings(long bookerId, LocalDateTime now, Pageable page); //Current
 
-    Page<Booking> findAllByBookerIdAndEndBeforeOrderByStartDesc(long bookerId, LocalDateTime now, Pageable page); //Past
+    Page<Booking> findAllByBookerIdAndEndBefore(long bookerId, LocalDateTime now, Pageable page); //Past
 
-    Page<Booking> findAllByBookerIdAndStartAfterOrderByStartDesc(long bookerId, LocalDateTime now, Pageable page); //Future
+    Page<Booking> findAllByBookerIdAndStartAfter(long bookerId, LocalDateTime now, Pageable page); //Future
 
-    Page<Booking> findAllByBookerIdAndStatusOrderByStartDesc(long bookerId, BookingStatus status, Pageable page); //Status
+    Page<Booking> findAllByBookerIdAndStatus(long bookerId, BookingStatus status, Pageable page); //Status
 
     //Конец блока
 
     // Поиск бронирований для владельца
-    Page<Booking> findAllByItemOwnerIdOrderByStartDesc(long ownerId, Pageable page); //ALL
+    Page<Booking> findAllByItemOwnerId(long ownerId, Pageable page); //ALL
 
     @Query("select b " +
             "from Booking b " +
@@ -70,10 +70,10 @@ public interface BookingRepository extends CrudRepository<Booking, Long> {
             "and b.end >= ?2 ")
     Page<Booking> findAllOwnerCurrentBookings(long bookerId, LocalDateTime now, Pageable page); //Current
 
-    Page<Booking> findAllByItemOwnerIdAndEndBeforeOrderByStartDesc(long bookerId, LocalDateTime now, Pageable page); //Past
+    Page<Booking> findAllByItemOwnerIdAndEndBefore(long bookerId, LocalDateTime now, Pageable page); //Past
 
-    Page<Booking> findAllByItemOwnerIdAndStartAfterOrderByStartDesc(long bookerId, LocalDateTime now, Pageable page); //Future
+    Page<Booking> findAllByItemOwnerIdAndStartAfter(long bookerId, LocalDateTime now, Pageable page); //Future
 
-    Page<Booking> findAllByItemOwnerIdAndStatusOrderByStartDesc(long bookerId, BookingStatus status, Pageable page); //Future
+    Page<Booking> findAllByItemOwnerIdAndStatus(long bookerId, BookingStatus status, Pageable page); //Future
     //Конец блока
 }

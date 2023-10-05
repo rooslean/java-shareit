@@ -407,7 +407,7 @@ public class BookingServiceImplUnitTest {
                 .when(userRepository.findById(2L))
                 .thenReturn(Optional.of(booker));
         Mockito
-                .when(bookingRepository.findAllByBookerIdOrderByStartDesc(anyLong(), any(PageRequest.class)))
+                .when(bookingRepository.findAllByBookerId(anyLong(), any(PageRequest.class)))
                 .thenReturn(new PageImpl<>(Mockito.anyList()));
 
         service.findAllByBookerIdAndBookingState(2L, BookingState.ALL, 0, 5);
@@ -415,7 +415,7 @@ public class BookingServiceImplUnitTest {
         Mockito.verify(userRepository, Mockito.times(1))
                 .findById(2L);
         Mockito.verify(bookingRepository, Mockito.times(1))
-                .findAllByBookerIdOrderByStartDesc(anyLong(), any(PageRequest.class));
+                .findAllByBookerId(anyLong(), any(PageRequest.class));
         Mockito.verifyNoMoreInteractions(bookingRepository);
     }
 
@@ -450,7 +450,7 @@ public class BookingServiceImplUnitTest {
                 .when(userRepository.findById(2L))
                 .thenReturn(Optional.of(booker));
         Mockito
-                .when(bookingRepository.findAllByBookerIdAndEndBeforeOrderByStartDesc(anyLong(),
+                .when(bookingRepository.findAllByBookerIdAndEndBefore(anyLong(),
                         any(LocalDateTime.class), any(PageRequest.class)))
                 .thenReturn(new PageImpl<>(Mockito.anyList()));
 
@@ -459,7 +459,7 @@ public class BookingServiceImplUnitTest {
         Mockito.verify(userRepository, Mockito.times(1))
                 .findById(2L);
         Mockito.verify(bookingRepository, Mockito.times(1))
-                .findAllByBookerIdAndEndBeforeOrderByStartDesc(anyLong(), any(LocalDateTime.class), any(PageRequest.class));
+                .findAllByBookerIdAndEndBefore(anyLong(), any(LocalDateTime.class), any(PageRequest.class));
         Mockito.verifyNoMoreInteractions(bookingRepository);
     }
 
@@ -472,7 +472,7 @@ public class BookingServiceImplUnitTest {
                 .when(userRepository.findById(2L))
                 .thenReturn(Optional.of(booker));
         Mockito
-                .when(bookingRepository.findAllByBookerIdAndStartAfterOrderByStartDesc(anyLong(),
+                .when(bookingRepository.findAllByBookerIdAndStartAfter(anyLong(),
                         any(LocalDateTime.class), any(PageRequest.class)))
                 .thenReturn(new PageImpl<>(Mockito.anyList()));
 
@@ -481,7 +481,7 @@ public class BookingServiceImplUnitTest {
         Mockito.verify(userRepository, Mockito.times(1))
                 .findById(2L);
         Mockito.verify(bookingRepository, Mockito.times(1))
-                .findAllByBookerIdAndStartAfterOrderByStartDesc(anyLong(), any(LocalDateTime.class), any(PageRequest.class));
+                .findAllByBookerIdAndStartAfter(anyLong(), any(LocalDateTime.class), any(PageRequest.class));
         Mockito.verifyNoMoreInteractions(bookingRepository);
     }
 
@@ -493,7 +493,7 @@ public class BookingServiceImplUnitTest {
                 .when(userRepository.findById(2L))
                 .thenReturn(Optional.of(booker));
         Mockito
-                .when(bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(2L,
+                .when(bookingRepository.findAllByBookerIdAndStatus(2L,
                         BookingStatus.WAITING, PageRequest.of(0, 5)))
                 .thenReturn(new PageImpl<>(Mockito.anyList()));
 
@@ -502,7 +502,7 @@ public class BookingServiceImplUnitTest {
         Mockito.verify(userRepository, Mockito.times(1))
                 .findById(2L);
         Mockito.verify(bookingRepository, Mockito.times(1))
-                .findAllByBookerIdAndStatusOrderByStartDesc(2L,
+                .findAllByBookerIdAndStatus(2L,
                         BookingStatus.WAITING, PageRequest.of(0, 5));
         Mockito.verifyNoMoreInteractions(bookingRepository);
     }
@@ -525,7 +525,7 @@ public class BookingServiceImplUnitTest {
                 .when(userRepository.findById(2L))
                 .thenReturn(Optional.of(booker));
         Mockito
-                .when(bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(2L,
+                .when(bookingRepository.findAllByBookerIdAndStatus(2L,
                         BookingStatus.REJECTED, PageRequest.of(0, 5)))
                 .thenReturn(new PageImpl<>(List.of(booking)));
 
@@ -534,7 +534,7 @@ public class BookingServiceImplUnitTest {
         Mockito.verify(userRepository, Mockito.times(1))
                 .findById(2L);
         Mockito.verify(bookingRepository, Mockito.times(1))
-                .findAllByBookerIdAndStatusOrderByStartDesc(2L,
+                .findAllByBookerIdAndStatus(2L,
                         BookingStatus.REJECTED, PageRequest.of(0, 5));
         Mockito.verifyNoMoreInteractions(bookingRepository);
     }
@@ -585,7 +585,7 @@ public class BookingServiceImplUnitTest {
                 .when(userRepository.findById(1L))
                 .thenReturn(Optional.of(owner));
         Mockito
-                .when(bookingRepository.findAllByItemOwnerIdOrderByStartDesc(anyLong(), any(PageRequest.class)))
+                .when(bookingRepository.findAllByItemOwnerId(anyLong(), any(PageRequest.class)))
                 .thenReturn(new PageImpl<>(Mockito.anyList()));
 
         service.findAllByOwnerIdAndBookingState(1L, BookingState.ALL, 0, 5);
@@ -593,7 +593,7 @@ public class BookingServiceImplUnitTest {
         Mockito.verify(userRepository, Mockito.times(1))
                 .findById(1L);
         Mockito.verify(bookingRepository, Mockito.times(1))
-                .findAllByItemOwnerIdOrderByStartDesc(anyLong(), any(PageRequest.class));
+                .findAllByItemOwnerId(anyLong(), any(PageRequest.class));
         Mockito.verifyNoMoreInteractions(bookingRepository);
     }
 
@@ -628,7 +628,7 @@ public class BookingServiceImplUnitTest {
                 .when(userRepository.findById(1L))
                 .thenReturn(Optional.of(owner));
         Mockito
-                .when(bookingRepository.findAllByItemOwnerIdAndEndBeforeOrderByStartDesc(anyLong(),
+                .when(bookingRepository.findAllByItemOwnerIdAndEndBefore(anyLong(),
                         any(LocalDateTime.class), any(PageRequest.class)))
                 .thenReturn(new PageImpl<>(Mockito.anyList()));
 
@@ -637,7 +637,7 @@ public class BookingServiceImplUnitTest {
         Mockito.verify(userRepository, Mockito.times(1))
                 .findById(1L);
         Mockito.verify(bookingRepository, Mockito.times(1))
-                .findAllByItemOwnerIdAndEndBeforeOrderByStartDesc(anyLong(), any(LocalDateTime.class), any(PageRequest.class));
+                .findAllByItemOwnerIdAndEndBefore(anyLong(), any(LocalDateTime.class), any(PageRequest.class));
         Mockito.verifyNoMoreInteractions(bookingRepository);
     }
 
@@ -650,7 +650,7 @@ public class BookingServiceImplUnitTest {
                 .when(userRepository.findById(1L))
                 .thenReturn(Optional.of(owner));
         Mockito
-                .when(bookingRepository.findAllByItemOwnerIdAndStartAfterOrderByStartDesc(anyLong(),
+                .when(bookingRepository.findAllByItemOwnerIdAndStartAfter(anyLong(),
                         any(LocalDateTime.class), any(PageRequest.class)))
                 .thenReturn(new PageImpl<>(Mockito.anyList()));
 
@@ -659,7 +659,7 @@ public class BookingServiceImplUnitTest {
         Mockito.verify(userRepository, Mockito.times(1))
                 .findById(1L);
         Mockito.verify(bookingRepository, Mockito.times(1))
-                .findAllByItemOwnerIdAndStartAfterOrderByStartDesc(anyLong(), any(LocalDateTime.class), any(PageRequest.class));
+                .findAllByItemOwnerIdAndStartAfter(anyLong(), any(LocalDateTime.class), any(PageRequest.class));
         Mockito.verifyNoMoreInteractions(bookingRepository);
     }
 
@@ -671,7 +671,7 @@ public class BookingServiceImplUnitTest {
                 .when(userRepository.findById(1L))
                 .thenReturn(Optional.of(owner));
         Mockito
-                .when(bookingRepository.findAllByItemOwnerIdAndStatusOrderByStartDesc(1L,
+                .when(bookingRepository.findAllByItemOwnerIdAndStatus(1L,
                         BookingStatus.WAITING, PageRequest.of(0, 5)))
                 .thenReturn(new PageImpl<>(Mockito.anyList()));
 
@@ -680,7 +680,7 @@ public class BookingServiceImplUnitTest {
         Mockito.verify(userRepository, Mockito.times(1))
                 .findById(1L);
         Mockito.verify(bookingRepository, Mockito.times(1))
-                .findAllByItemOwnerIdAndStatusOrderByStartDesc(1L,
+                .findAllByItemOwnerIdAndStatus(1L,
                         BookingStatus.WAITING, PageRequest.of(0, 5));
         Mockito.verifyNoMoreInteractions(bookingRepository);
     }
@@ -703,7 +703,7 @@ public class BookingServiceImplUnitTest {
                 .when(userRepository.findById(1L))
                 .thenReturn(Optional.of(owner));
         Mockito
-                .when(bookingRepository.findAllByItemOwnerIdAndStatusOrderByStartDesc(1L,
+                .when(bookingRepository.findAllByItemOwnerIdAndStatus(1L,
                         BookingStatus.REJECTED, PageRequest.of(0, 5)))
                 .thenReturn(new PageImpl<>(List.of(booking)));
 
@@ -712,7 +712,7 @@ public class BookingServiceImplUnitTest {
         Mockito.verify(userRepository, Mockito.times(1))
                 .findById(1L);
         Mockito.verify(bookingRepository, Mockito.times(1))
-                .findAllByItemOwnerIdAndStatusOrderByStartDesc(1L,
+                .findAllByItemOwnerIdAndStatus(1L,
                         BookingStatus.REJECTED, PageRequest.of(0, 5));
         Mockito.verifyNoMoreInteractions(bookingRepository);
     }
