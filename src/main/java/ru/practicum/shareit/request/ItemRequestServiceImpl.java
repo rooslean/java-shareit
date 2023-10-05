@@ -11,6 +11,7 @@ import ru.practicum.shareit.exception.ObjectNotFoundException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
+import ru.practicum.shareit.request.dto.ItemRequestDtoWithItems;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
@@ -38,7 +39,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     }
 
     @Override
-    public List<ItemRequestDto> findAll(Long userId) {
+    public List<ItemRequestDtoWithItems> findAll(Long userId) {
         userRepository.findById(userId)
                 .orElseThrow(ObjectNotFoundException::new);
         Sort sort = Sort.by("created").descending();
@@ -52,7 +53,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     }
 
     @Override
-    public List<ItemRequestDto> findAll(Long userId, int from, int size) {
+    public List<ItemRequestDtoWithItems> findAll(Long userId, int from, int size) {
         userRepository.findById(userId)
                 .orElseThrow(ObjectNotFoundException::new);
         Sort sort = Sort.by("created").descending();

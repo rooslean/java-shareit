@@ -22,7 +22,7 @@ public class ItemRequestMapper {
 
     }
 
-    public static List<ItemRequestDto> mapToItemRequestDto(List<ItemRequest> itemRequests, Map<Long, List<Item>> items) {
+    public static List<ItemRequestDtoWithItems> mapToItemRequestDto(List<ItemRequest> itemRequests, Map<Long, List<Item>> items) {
         return itemRequests.stream()
                 .map(req ->
                         ItemRequestMapper.mapToItemRequestDto(req, items.getOrDefault(req.getId(), Collections.emptyList())))
@@ -30,11 +30,11 @@ public class ItemRequestMapper {
 
     }
 
-    public static ItemRequestDto mapToItemRequestDto(ItemRequest itemRequest) {
+    public static ItemRequestDtoWithItems mapToItemRequestDto(ItemRequest itemRequest) {
         return mapToItemRequestDto(itemRequest, Collections.emptyList());
     }
 
-    public static ItemRequestDto mapToItemRequestDto(ItemRequest itemRequest, List<Item> items) {
+    public static ItemRequestDtoWithItems mapToItemRequestDto(ItemRequest itemRequest, List<Item> items) {
         ItemRequestDtoWithItems itemRequestDto = new ItemRequestDtoWithItems();
         itemRequestDto.setId(itemRequest.getId());
         itemRequestDto.setDescription(itemRequest.getDescription());

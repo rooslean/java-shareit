@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
+import ru.practicum.shareit.request.dto.ItemRequestDtoWithItems;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -27,12 +28,12 @@ public class ItemRequestController {
     }
 
     @GetMapping
-    public List<ItemRequestDto> findAllUserRequests(@RequestHeader("X-Sharer-User-Id") Long userId) {
+    public List<ItemRequestDtoWithItems> findAllUserRequests(@RequestHeader("X-Sharer-User-Id") Long userId) {
         return requestService.findAll(userId);
     }
 
     @GetMapping("/all")
-    public List<ItemRequestDto> findAllRequests(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public List<ItemRequestDtoWithItems> findAllRequests(@RequestHeader("X-Sharer-User-Id") Long userId,
                                                 @RequestParam(defaultValue = "0") int from,
                                                 @RequestParam(defaultValue = "10") int size) {
         return requestService.findAll(userId, from, size);
