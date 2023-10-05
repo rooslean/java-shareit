@@ -7,11 +7,12 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.practicum.shareit.request.dto.ItemRequestDto;
+import ru.practicum.shareit.request.dto.ItemRequestDtoWithItems;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.Matchers.is;
@@ -36,7 +37,7 @@ public class ItemRequestControllerMVCTest {
 
     private final LocalDateTime created = LocalDateTime.parse(LocalDateTime.now().format(formatter));
 
-    private final ItemRequestDto requestDto = new ItemRequestDto(1L, "Надо чем пострелять", created);
+    private final ItemRequestDtoWithItems requestDto = new ItemRequestDtoWithItems(1L, "Надо чем пострелять", created, Collections.emptyList());
 
     @Test
     void testAddRequest() throws Exception {

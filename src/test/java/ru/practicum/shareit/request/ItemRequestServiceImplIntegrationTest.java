@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
+import ru.practicum.shareit.request.dto.ItemRequestDtoWithItems;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.service.UserService;
 
@@ -44,7 +45,7 @@ public class ItemRequestServiceImplIntegrationTest {
                 .build();
         ItemRequestDto addedItemRequest = requestService.addRequest(itemRequestDto, createdUserOne.getId());
 
-        List<ItemRequestDto> itemRequests = requestService.findAll(createdUserTwo.getId(), 0, 5);
+        List<ItemRequestDtoWithItems> itemRequests = requestService.findAll(createdUserTwo.getId(), 0, 5);
 
         assertThat(itemRequests, hasSize(1));
         assertThat(itemRequests, hasItem(allOf(
@@ -72,7 +73,7 @@ public class ItemRequestServiceImplIntegrationTest {
                 .build();
         ItemRequestDto addedItemRequest = requestService.addRequest(itemRequestDto, createdUserOne.getId());
 
-        List<ItemRequestDto> itemRequests = requestService.findAll(createdUserOne.getId());
+        List<ItemRequestDtoWithItems> itemRequests = requestService.findAll(createdUserOne.getId());
 
         assertThat(itemRequests, hasSize(1));
         assertThat(itemRequests, hasItem(allOf(
