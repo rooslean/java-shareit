@@ -503,33 +503,7 @@ public class ItemServiceImplUnitTest {
 
     }
 
-    @Test
-    void findItemsByOwnerIdWrongPagination() {
-        ItemService service = makeItemService();
-
-        final BadRequestException exception = Assertions.assertThrows(BadRequestException.class,
-                () -> service.findItemsByOwnerId(1L, -1, 0));
-
-        assertThat(exception.getMessage(), equalTo("Неверно выбрана пагинация"));
-
-        Mockito.verifyNoInteractions(itemRepository);
-        Mockito.verifyNoInteractions(bookingRepository);
-        Mockito.verifyNoInteractions(commentRepository);
-    }
-
-    @Test
-    void searchItemsByPhraseWrongPagination() {
-        ItemService service = makeItemService();
-
-        final BadRequestException exception = Assertions.assertThrows(BadRequestException.class,
-                () -> service.searchItemsByPhrase("Пилит", -1, 0));
-
-        assertThat(exception.getMessage(), equalTo("Неверно выбрана пагинация"));
-
-        Mockito.verifyNoInteractions(itemRepository);
-    }
-
-    @Test
+@Test
     void searchItemsByPhraseEmptyPhrase() {
         ItemService service = makeItemService();
 

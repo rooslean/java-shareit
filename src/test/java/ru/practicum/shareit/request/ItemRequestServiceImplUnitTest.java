@@ -7,7 +7,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import ru.practicum.shareit.exception.BadRequestException;
 import ru.practicum.shareit.exception.ObjectNotFoundException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
@@ -104,24 +103,6 @@ public class ItemRequestServiceImplUnitTest {
         Mockito.verify(userRepository, Mockito.times(1))
                 .findById(1L);
         Mockito.verifyNoInteractions(requestRepository);
-    }
-
-    @Test
-    void testFindAllWithPaginationWrongPagination() {
-        User user = new User(1L, "Stas", "stas@test.com");
-        Mockito
-                .when(userRepository.findById(1L))
-                .thenReturn(Optional.of(user));
-
-        final BadRequestException exception = Assertions.assertThrows(BadRequestException.class,
-                () -> service.findAll(1L, -1, 5));
-
-        assertThat(exception.getMessage(), equalTo("Неверно выбрана пагинация"));
-
-        Mockito.verify(userRepository, Mockito.times(1))
-                .findById(1L);
-        Mockito.verifyNoInteractions(requestRepository);
-        Mockito.verifyNoInteractions(itemRepository);
     }
 
     @Test

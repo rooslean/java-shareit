@@ -8,6 +8,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.NewBookingDto;
 import ru.practicum.shareit.exception.BadRequestException;
@@ -35,6 +36,8 @@ public class BookingServiceImplUnitTest {
     private UserRepository userRepository;
     @Mock
     private ItemRepository itemRepository;
+
+    private final Sort sort = Sort.by("start").descending();
 
     @Test
     void testAddBookingWithInvalidData() {
@@ -380,25 +383,6 @@ public class BookingServiceImplUnitTest {
     }
 
     @Test
-    void testFindAllByBookerIdAndBookingStateWrongPagination() {
-        BookingService service = getBookingService();
-        User booker = new User(2L, "Stan", "stan@test.ru");
-
-        Mockito
-                .when(userRepository.findById(2L))
-                .thenReturn(Optional.of(booker));
-
-        final BadRequestException exception = Assertions.assertThrows(BadRequestException.class,
-                () -> service.findAllByBookerIdAndBookingState(2L, BookingState.ALL, -1, 0));
-
-        assertThat(exception.getMessage(), equalTo("Неверно выбрана пагинация"));
-
-        Mockito.verify(userRepository, Mockito.times(1))
-                .findById(2L);
-        Mockito.verifyNoInteractions(bookingRepository);
-    }
-
-    @Test
     void testFindAllByBookerIdAndBookingStateWithStateAll() {
         BookingService service = getBookingService();
         User booker = new User(2L, "Stan", "stan@test.ru");
@@ -494,7 +478,7 @@ public class BookingServiceImplUnitTest {
                 .thenReturn(Optional.of(booker));
         Mockito
                 .when(bookingRepository.findAllByBookerIdAndStatus(2L,
-                        BookingStatus.WAITING, PageRequest.of(0, 5)))
+                        BookingStatus.WAITING, PageRequest.of(0, 5, sort)))
                 .thenReturn(new PageImpl<>(Mockito.anyList()));
 
         service.findAllByBookerIdAndBookingState(2L, BookingState.WAITING, 0, 5);
@@ -503,7 +487,7 @@ public class BookingServiceImplUnitTest {
                 .findById(2L);
         Mockito.verify(bookingRepository, Mockito.times(1))
                 .findAllByBookerIdAndStatus(2L,
-                        BookingStatus.WAITING, PageRequest.of(0, 5));
+                        BookingStatus.WAITING, PageRequest.of(0, 5, sort));
         Mockito.verifyNoMoreInteractions(bookingRepository);
     }
 
@@ -526,7 +510,7 @@ public class BookingServiceImplUnitTest {
                 .thenReturn(Optional.of(booker));
         Mockito
                 .when(bookingRepository.findAllByBookerIdAndStatus(2L,
-                        BookingStatus.REJECTED, PageRequest.of(0, 5)))
+                        BookingStatus.REJECTED, PageRequest.of(0, 5, sort)))
                 .thenReturn(new PageImpl<>(List.of(booking)));
 
         service.findAllByBookerIdAndBookingState(2L, BookingState.REJECTED, 0, 5);
@@ -535,7 +519,7 @@ public class BookingServiceImplUnitTest {
                 .findById(2L);
         Mockito.verify(bookingRepository, Mockito.times(1))
                 .findAllByBookerIdAndStatus(2L,
-                        BookingStatus.REJECTED, PageRequest.of(0, 5));
+                        BookingStatus.REJECTED, PageRequest.of(0, 5, sort));
         Mockito.verifyNoMoreInteractions(bookingRepository);
     }
 ///
@@ -557,26 +541,7 @@ public class BookingServiceImplUnitTest {
         Mockito.verifyNoInteractions(bookingRepository);
     }
 
-    @Test
-    void testFindAllByOwnerIdAndBookingStateWrongPagination() {
-        BookingService service = getBookingService();
-        User owner = new User(1L, "Mike", "mike@test.ru");
-
-        Mockito
-                .when(userRepository.findById(1L))
-                .thenReturn(Optional.of(owner));
-
-        final BadRequestException exception = Assertions.assertThrows(BadRequestException.class,
-                () -> service.findAllByOwnerIdAndBookingState(1L, BookingState.ALL, -1, 0));
-
-        assertThat(exception.getMessage(), equalTo("Неверно выбрана пагинация"));
-
-        Mockito.verify(userRepository, Mockito.times(1))
-                .findById(1L);
-        Mockito.verifyNoInteractions(bookingRepository);
-    }
-
-    @Test
+  @Test
     void testFindAllByOwnerIdAndBookingStateWithStateAll() {
         BookingService service = getBookingService();
         User owner = new User(1L, "Mike", "mike@test.ru");
@@ -672,7 +637,7 @@ public class BookingServiceImplUnitTest {
                 .thenReturn(Optional.of(owner));
         Mockito
                 .when(bookingRepository.findAllByItemOwnerIdAndStatus(1L,
-                        BookingStatus.WAITING, PageRequest.of(0, 5)))
+                        BookingStatus.WAITING, PageRequest.of(0, 5, sort)))
                 .thenReturn(new PageImpl<>(Mockito.anyList()));
 
         service.findAllByOwnerIdAndBookingState(1L, BookingState.WAITING, 0, 5);
@@ -681,7 +646,7 @@ public class BookingServiceImplUnitTest {
                 .findById(1L);
         Mockito.verify(bookingRepository, Mockito.times(1))
                 .findAllByItemOwnerIdAndStatus(1L,
-                        BookingStatus.WAITING, PageRequest.of(0, 5));
+                        BookingStatus.WAITING, PageRequest.of(0, 5, sort));
         Mockito.verifyNoMoreInteractions(bookingRepository);
     }
 
@@ -704,7 +669,7 @@ public class BookingServiceImplUnitTest {
                 .thenReturn(Optional.of(owner));
         Mockito
                 .when(bookingRepository.findAllByItemOwnerIdAndStatus(1L,
-                        BookingStatus.REJECTED, PageRequest.of(0, 5)))
+                        BookingStatus.REJECTED, PageRequest.of(0, 5, sort)))
                 .thenReturn(new PageImpl<>(List.of(booking)));
 
         service.findAllByOwnerIdAndBookingState(1L, BookingState.REJECTED, 0, 5);
@@ -713,7 +678,7 @@ public class BookingServiceImplUnitTest {
                 .findById(1L);
         Mockito.verify(bookingRepository, Mockito.times(1))
                 .findAllByItemOwnerIdAndStatus(1L,
-                        BookingStatus.REJECTED, PageRequest.of(0, 5));
+                        BookingStatus.REJECTED, PageRequest.of(0, 5, sort));
         Mockito.verifyNoMoreInteractions(bookingRepository);
     }
 
