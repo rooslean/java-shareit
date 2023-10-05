@@ -71,13 +71,10 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public List<ItemDto> findItemsByOwnerId(Long ownerId, int from, int size) {
         List<Item> items;
-        if (from < 0 || size < 1) {
-            throw new BadRequestException("Неверно выбрана пагинация");
-        } else {
-            PageRequest page = PageRequest.of(from > 0 ? from / size : 0, size);
-            items = itemRepository.findByOwnerIdOrderById(ownerId, page)
-                    .getContent();
-        }
+
+        PageRequest page = PageRequest.of(from > 0 ? from / size : 0, size);
+        items = itemRepository.findByOwnerIdOrderById(ownerId, page)
+                .getContent();
         List<ItemDto> itemsWithBookings;
         Sort sort = Sort.by("start").ascending();
         Collection<Long> itemIds = items.stream().map(Item::getId).collect(Collectors.toSet());
@@ -95,9 +92,6 @@ public class ItemServiceImpl implements ItemService {
     public List<ItemDto> searchItemsByPhrase(String searchPhrase, int from, int size) {
         if (searchPhrase == null || searchPhrase.trim().isEmpty()) {
             return Collections.emptyList();
-        }
-        if (from < 0 || size < 1) {
-            throw new BadRequestException("Неверно выбрана пагинация");
         }
         PageRequest page = PageRequest.of(from > 0 ? from / size : 0, size);
 

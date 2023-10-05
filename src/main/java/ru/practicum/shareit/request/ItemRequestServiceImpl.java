@@ -6,7 +6,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.shareit.exception.BadRequestException;
 import ru.practicum.shareit.exception.ObjectNotFoundException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
@@ -58,14 +57,10 @@ public class ItemRequestServiceImpl implements ItemRequestService {
                 .orElseThrow(ObjectNotFoundException::new);
         Sort sort = Sort.by("created").descending();
         List<ItemRequest> itemRequests;
-        if (from < 0 || size < 1) {
-            throw new BadRequestException("Неверно выбрана пагинация");
-        } else {
-            PageRequest page = PageRequest.of(from > 0 ? from / size : 0, size);
-            page.withSort(sort);
-            itemRequests = requestRepository.findByRequesterIdNot(userId, page)
-                    .getContent();
-        }
+        PageRequest page = PageRequest.of(from > 0 ? from / size : 0, size);
+        page.withSort(sort);
+        itemRequests = requestRepository.findByRequesterIdNot(userId, page)
+                .getContent();
         Map<Long, List<Item>> items = itemRepository.findByRequestIdIn(itemRequests.stream()
                         .map(ItemRequest::getId)
                         .collect(Collectors.toSet()))

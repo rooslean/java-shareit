@@ -80,13 +80,8 @@ public class BookingServiceImpl implements BookingService {
     public List<BookingDto> findAllByBookerIdAndBookingState(long bookerId, BookingState state, int from, int size) {
         List<BookingDto> bookingsDto = new ArrayList<>();
         doesUserExist(bookerId);
-        PageRequest page;
-        if (from < 0 || size < 1) {
-            throw new BadRequestException("Неверно выбрана пагинация");
-        } else {
-            page = PageRequest.of(from > 0 ? from / size : 0, size);
-        }
-        Sort sort = Sort.by(Sort.Direction.DESC,"start");
+        PageRequest page = PageRequest.of(from > 0 ? from / size : 0, size);
+        Sort sort = Sort.by(Sort.Direction.DESC, "start");
         page = page.withSort(sort);
         switch (state) {
             case ALL:
@@ -115,12 +110,7 @@ public class BookingServiceImpl implements BookingService {
     public List<BookingDto> findAllByOwnerIdAndBookingState(long ownerId, BookingState state, int from, int size) {
         List<BookingDto> bookingsDto = new ArrayList<>();
         doesUserExist(ownerId);
-        PageRequest page;
-        if (from < 0 || size < 1) {
-            throw new BadRequestException("Неверно выбрана пагинация");
-        } else {
-            page = PageRequest.of(from > 0 ? from / size : 0, size);
-        }
+        PageRequest page = PageRequest.of(from > 0 ? from / size : 0, size);
         Sort sort = Sort.by("start").descending();
         page = page.withSort(sort);
         switch (state) {
