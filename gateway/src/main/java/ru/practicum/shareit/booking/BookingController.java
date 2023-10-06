@@ -23,17 +23,20 @@ public class BookingController {
 
     @PostMapping
     public ResponseEntity<Object> addBooking(@RequestBody @Valid NewBookingDto newBookingDto, @RequestHeader("X-Sharer-User-Id") Long bookerId) {
+        log.info("Add booking with userId={}", bookerId);
         return bookingClient.addBooking(newBookingDto, bookerId);
     }
 
     @PatchMapping("/{bookingId}")
     public ResponseEntity<Object> approveBooking(@PathVariable long bookingId, @RequestParam boolean approved,
                                                  @RequestHeader("X-Sharer-User-Id") Long ownerId) {
+        log.info("Patch booking with ownerId={}, bookingId={}", ownerId, bookingId);
         return bookingClient.approveBooking(bookingId, approved, ownerId);
     }
 
     @GetMapping("/{bookingId}")
     public ResponseEntity<Object> getBookingInfo(@PathVariable long bookingId, @RequestHeader("X-Sharer-User-Id") Long userId) {
+        log.info("Get booking with userId={}", userId);
         return bookingClient.getBookingInfo(bookingId, userId);
     }
 

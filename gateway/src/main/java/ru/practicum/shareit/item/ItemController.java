@@ -24,6 +24,7 @@ public class ItemController {
 
     @GetMapping("/{itemId}")
     public ResponseEntity<Object> getItemById(@PathVariable Long itemId, @RequestHeader("X-Sharer-User-Id") Long userId) {
+        log.info("Get item with userId={}, itemId={}", userId, itemId);
         return client.getItemById(itemId, userId);
     }
 
@@ -31,6 +32,7 @@ public class ItemController {
     public ResponseEntity<Object> findItemsByOwnerId(@RequestHeader("X-Sharer-User-Id") Long userId,
                                                      @PositiveOrZero @RequestParam(defaultValue = "0") int from,
                                                      @Positive @RequestParam(defaultValue = "10") int size) {
+        log.info("Get items by owner with userId={}, from={}, size={}", userId, from, size);
         return client.findItemsByOwnerId(userId, from, size);
     }
 
@@ -38,22 +40,26 @@ public class ItemController {
     public ResponseEntity<Object> searchItemsByPhrase(@RequestParam("text") String searchPhrase,
                                                       @PositiveOrZero @RequestParam(defaultValue = "0") int from,
                                                       @Positive @RequestParam(defaultValue = "10") int size) {
+        log.info("Get items by phrase with text={}, from={}, size={}", searchPhrase, from, size);
         return client.searchItemsByPhrase(searchPhrase, from, size);
     }
 
     @PostMapping
     public ResponseEntity<Object> addItem(@RequestHeader("X-Sharer-User-Id") Long userId, @RequestBody ItemDto itemDto) {
+        log.info("Add item with userId={}", userId);
         return client.addItem(userId, itemDto);
     }
 
     @PostMapping("/{itemId}/comment")
     public ResponseEntity<Object> addComment(@RequestHeader("X-Sharer-User-Id") Long userId, @RequestBody @Valid CommentDto commentDto,
                                              @PathVariable long itemId) {
+        log.info("Add comment to item with userId={}, itemId={}", userId, itemId);
         return client.addComment(userId, commentDto, itemId);
     }
 
     @PatchMapping("/{itemId}")
     public ResponseEntity<Object> updateItem(@PathVariable Long itemId, @RequestHeader("X-Sharer-User-Id") Long userId, @RequestBody ItemDto itemDto) {
+        log.info("Patch item with userId={}, itemId={}", userId, itemDto);
         return client.updateItem(itemId, userId, itemDto);
     }
 
