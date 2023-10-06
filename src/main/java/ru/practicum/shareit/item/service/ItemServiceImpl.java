@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.service;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,11 +21,12 @@ import ru.practicum.shareit.item.comments.CommentRepository;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.request.ItemRequest;
+import ru.practicum.shareit.request.ItemRequestRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -43,6 +45,7 @@ public class ItemServiceImpl implements ItemService {
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
+    private final ItemRequestRepository requestRepository;
 
 
     @Override
@@ -57,7 +60,7 @@ public class ItemServiceImpl implements ItemService {
             Sort sort = Sort.by("start").ascending();
             bookings = bookingRepository.findLastAndNearFutureBookingsByItemIn(Set.of(itemId), LocalDateTime.now(), sort);
         } else {
-            bookings = new ArrayList<>();
+            bookings = Collections.emptyList();
         }
         List<CommentDto> comments = CommentMapper.mapToCommentDto(commentRepository.findByItemIdInOrderByCreated(Set.of(itemId)));
         itemDto = ItemMapper.mapToItemDtoWithBookings(item, bookings, comments);
@@ -66,8 +69,12 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> findItemsByOwnerId(Long ownerId) {
-        List<Item> items = itemRepository.findByOwnerIdOrderById(ownerId);
+    public List<ItemDto> findItemsByOwnerId(Long ownerId, int from, int size) {
+        List<Item> items;
+
+        PageRequest page = PageRequest.of(from > 0 ? from / size : 0, size);
+        items = itemRepository.findByOwnerIdOrderById(ownerId, page)
+                .getContent();
         List<ItemDto> itemsWithBookings;
         Sort sort = Sort.by("start").ascending();
         Collection<Long> itemIds = items.stream().map(Item::getId).collect(Collectors.toSet());
@@ -82,11 +89,13 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> searchItemsByPhrase(String searchPhrase) {
+    public List<ItemDto> searchItemsByPhrase(String searchPhrase, int from, int size) {
         if (searchPhrase == null || searchPhrase.trim().isEmpty()) {
             return Collections.emptyList();
         }
-        return itemRepository.findByNameOrDescription(searchPhrase)
+        PageRequest page = PageRequest.of(from > 0 ? from / size : 0, size);
+
+        return itemRepository.findByNameOrDescription(searchPhrase, page)
                 .stream()
                 .map(ItemMapper::mapItemToItemDto)
                 .collect(Collectors.toList());
@@ -100,7 +109,12 @@ public class ItemServiceImpl implements ItemService {
         if (owner.isEmpty()) {
             throw new ObjectNotFoundException("Пользователь", ownerId);
         }
-        Item item = ItemMapper.mapItemDtoToItem(itemDto, owner.get());
+        ItemRequest itemRequest = null;
+        if (itemDto.getRequestId() != null) {
+            itemRequest = requestRepository.findById(itemDto.getRequestId())
+                    .orElseThrow(ObjectNotFoundException::new);
+        }
+        Item item = ItemMapper.mapItemDtoToItem(itemDto, owner.get(), itemRequest);
         itemDto = ItemMapper.mapItemToItemDto(itemRepository.save(item));
         log.info("Предмет с идентификатором {} был добавлен для пользователя {} был создан", item.getId(), ownerId);
         return itemDto;

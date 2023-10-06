@@ -20,13 +20,6 @@ public class ErrorHandler {
         return new ErrorResponse("Объект не найден", e.getMessage());
     }
 
-    @ExceptionHandler({ObjectAlreadyExistsException.class})
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handleObjectAlreadyExists(final RuntimeException e) {
-        log.info(e.getMessage(), e);
-        return new ErrorResponse("Объект уже существует", e.getMessage());
-    }
-
     @ExceptionHandler({ObjectNotValidException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleObjectNotValid(final RuntimeException e) {

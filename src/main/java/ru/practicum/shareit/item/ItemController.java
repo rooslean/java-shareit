@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,11 +16,14 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.service.ItemService;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 
 @RestController
 @RequiredArgsConstructor
+@Validated
 @RequestMapping("/items")
 public class ItemController {
     private final ItemService itemService;
@@ -30,13 +34,17 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemDto> findItemsByOwnerId(@RequestHeader("X-Sharer-User-Id") Long userId) {
-        return itemService.findItemsByOwnerId(userId);
+    public List<ItemDto> findItemsByOwnerId(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                            @PositiveOrZero @RequestParam(defaultValue = "0") int from,
+                                            @Positive @RequestParam(defaultValue = "10") int size) {
+        return itemService.findItemsByOwnerId(userId, from, size);
     }
 
     @GetMapping("/search")
-    public List<ItemDto> searchItemsByPhrase(@RequestParam("text") String searchPhrase) {
-        return itemService.searchItemsByPhrase(searchPhrase);
+    public List<ItemDto> searchItemsByPhrase(@RequestParam("text") String searchPhrase,
+                                             @PositiveOrZero @RequestParam(defaultValue = "0") int from,
+                                             @Positive @RequestParam(defaultValue = "10") int size) {
+        return itemService.searchItemsByPhrase(searchPhrase, from, size);
     }
 
     @PostMapping
@@ -51,7 +59,7 @@ public class ItemController {
     }
 
     @PatchMapping("/{itemId}")
-    public ItemDto updateUser(@PathVariable Long itemId, @RequestHeader("X-Sharer-User-Id") Long userId, @RequestBody ItemDto itemDto) {
+    public ItemDto updateItem(@PathVariable Long itemId, @RequestHeader("X-Sharer-User-Id") Long userId, @RequestBody ItemDto itemDto) {
         return itemService.updateItem(itemId, userId, itemDto);
     }
 

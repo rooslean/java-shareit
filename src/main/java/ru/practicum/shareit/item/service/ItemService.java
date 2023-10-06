@@ -9,9 +9,9 @@ public interface ItemService {
 
     ItemDto getItemById(Long itemId, Long userId);
 
-    List<ItemDto> findItemsByOwnerId(Long ownerId);
+    List<ItemDto> findItemsByOwnerId(Long ownerId, int from, int size);
 
-    List<ItemDto> searchItemsByPhrase(String searchPhrase);
+    List<ItemDto> searchItemsByPhrase(String searchPhrase, int from, int size);
 
     ItemDto addItem(Long ownerId, ItemDto itemDto);
 

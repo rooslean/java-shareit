@@ -9,10 +9,11 @@ import ru.practicum.shareit.item.comments.CommentMapper;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoWithBookings;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -25,8 +26,10 @@ public class ItemMapper {
                 .name(item.getName())
                 .description(item.getDescription())
                 .available(item.getAvailable())
+                .requestId(item.getRequest() != null ? item.getRequest().getId() : null)
                 .build();
     }
+
 
     public static ItemDto mapToItemDtoWithBookings(Item item, List<Booking> bookings, List<CommentDto> comments) {
         ShortBookingDto lastBooking = null;
@@ -42,22 +45,24 @@ public class ItemMapper {
                 lastBooking = BookingMapper.mapToShortBookingDto(bookings.get(0));
             }
         }
-        return new ItemDtoWithBookings(item.getId(), item.getOwner().getId(),
+        Long itemRequestId = item.getRequest() != null ? item.getRequest().getId() : null;
+        return new ItemDtoWithBookings(item.getId(), item.getOwner().getId(), itemRequestId,
                 item.getName(), item.getDescription(), item.getAvailable(), lastBooking, nextBooking, comments);
     }
 
     public static List<ItemDto> mapToItemDtoWithBookings(List<Item> items, Map<Long,
             List<Booking>> bookings, Map<Long, List<Comment>> comments) {
         return items.stream()
-                .map(i -> ItemMapper.mapToItemDtoWithBookings(i, bookings.getOrDefault(i.getId(), new ArrayList<>()),
-                        CommentMapper.mapToCommentDto(comments.getOrDefault(i.getId(), new ArrayList<>()))))
+                .map(i -> ItemMapper.mapToItemDtoWithBookings(i, bookings.getOrDefault(i.getId(), Collections.emptyList()),
+                        CommentMapper.mapToCommentDto(comments.getOrDefault(i.getId(), Collections.emptyList()))))
                 .collect(Collectors.toList());
     }
 
-    public static Item mapItemDtoToItem(ItemDto itemDto, User owner) {
+    public static Item mapItemDtoToItem(ItemDto itemDto, User owner, ItemRequest itemRequest) {
         return Item.builder()
                 .id(itemDto.getId())
                 .owner(owner)
+                .request(itemRequest)
                 .name(itemDto.getName())
                 .description(itemDto.getDescription())
                 .available(itemDto.getAvailable())
@@ -77,5 +82,11 @@ public class ItemMapper {
         if (itemDto.getAvailable() != null) {
             item.setAvailable(itemDto.getAvailable());
         }
+    }
+
+    public static List<ItemDto> mapToItemDtoRequestInfo(List<Item> items) {
+        return items.stream()
+                .map(ItemMapper::mapItemToItemDto)
+                .collect(Collectors.toList());
     }
 }
