@@ -541,7 +541,7 @@ public class BookingServiceImplUnitTest {
         Mockito.verifyNoInteractions(bookingRepository);
     }
 
-  @Test
+    @Test
     void testFindAllByOwnerIdAndBookingStateWithStateAll() {
         BookingService service = getBookingService();
         User owner = new User(1L, "Mike", "mike@test.ru");

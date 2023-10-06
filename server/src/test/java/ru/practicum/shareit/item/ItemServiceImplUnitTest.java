@@ -503,7 +503,7 @@ public class ItemServiceImplUnitTest {
 
     }
 
-@Test
+    @Test
     void searchItemsByPhraseEmptyPhrase() {
         ItemService service = makeItemService();
 
