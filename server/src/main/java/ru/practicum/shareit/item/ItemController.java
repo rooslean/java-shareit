@@ -23,7 +23,6 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@Validated
 @RequestMapping("/items")
 public class ItemController {
     private final ItemService itemService;
@@ -35,15 +34,15 @@ public class ItemController {
 
     @GetMapping
     public List<ItemDto> findItemsByOwnerId(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                            @PositiveOrZero @RequestParam(defaultValue = "0") int from,
-                                            @Positive @RequestParam(defaultValue = "10") int size) {
+                                            @RequestParam(defaultValue = "0") int from,
+                                            @RequestParam(defaultValue = "10") int size) {
         return itemService.findItemsByOwnerId(userId, from, size);
     }
 
     @GetMapping("/search")
     public List<ItemDto> searchItemsByPhrase(@RequestParam("text") String searchPhrase,
-                                             @PositiveOrZero @RequestParam(defaultValue = "0") int from,
-                                             @Positive @RequestParam(defaultValue = "10") int size) {
+                                             @RequestParam(defaultValue = "0") int from,
+                                             @RequestParam(defaultValue = "10") int size) {
         return itemService.searchItemsByPhrase(searchPhrase, from, size);
     }
 
@@ -53,7 +52,7 @@ public class ItemController {
     }
 
     @PostMapping("/{itemId}/comment")
-    public CommentDto addComment(@RequestHeader("X-Sharer-User-Id") Long userId, @RequestBody @Valid CommentDto commentDto,
+    public CommentDto addComment(@RequestHeader("X-Sharer-User-Id") Long userId, @RequestBody CommentDto commentDto,
                                  @PathVariable long itemId) {
         return itemService.addComment(itemId, userId, commentDto);
     }

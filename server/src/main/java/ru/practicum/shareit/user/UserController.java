@@ -35,12 +35,12 @@ public class UserController {
     }
 
     @PostMapping
-    public UserDto createUser(@Validated(NewUser.class) @RequestBody UserDto userDto) {
+    public UserDto createUser(@RequestBody UserDto userDto) {
         return userService.createUser(userDto);
     }
 
     @PatchMapping("/{userId}")
-    public UserDto updateUser(@PathVariable Long userId, @Validated(ExistUser.class) @RequestBody UserDto userDto) {
+    public UserDto updateUser(@PathVariable Long userId, @RequestBody UserDto userDto) {
         return userService.updateUser(userId, userDto);
     }
 

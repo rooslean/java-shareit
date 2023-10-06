@@ -21,12 +21,11 @@ import java.util.List;
 @RestController
 @RequestMapping(path = "/requests")
 @RequiredArgsConstructor
-@Validated
 public class ItemRequestController {
     private final ItemRequestService requestService;
 
     @PostMapping
-    public ItemRequestDto addItemRequest(@RequestBody @Valid ItemRequestDto itemRequestDto,
+    public ItemRequestDto addItemRequest(@RequestBody ItemRequestDto itemRequestDto,
                                          @RequestHeader("X-Sharer-User-Id") Long userId) {
         return requestService.addRequest(itemRequestDto, userId);
     }
@@ -38,8 +37,8 @@ public class ItemRequestController {
 
     @GetMapping("/all")
     public List<ItemRequestDtoWithItems> findAllRequests(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                                         @PositiveOrZero @RequestParam(defaultValue = "0") int from,
-                                                         @Positive @RequestParam(defaultValue = "10") int size) {
+                                                         @RequestParam(defaultValue = "0") int from,
+                                                         @RequestParam(defaultValue = "10") int size) {
         return requestService.findAll(userId, from, size);
     }
 
