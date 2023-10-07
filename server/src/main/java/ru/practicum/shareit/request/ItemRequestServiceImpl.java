@@ -55,10 +55,8 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     public List<ItemRequestDtoWithItems> findAll(Long userId, int from, int size) {
         userRepository.findById(userId)
                 .orElseThrow(ObjectNotFoundException::new);
-        Sort sort = Sort.by("created").descending();
         List<ItemRequest> itemRequests;
-        PageRequest page = PageRequest.of(from > 0 ? from / size : 0, size);
-        page.withSort(sort);
+        PageRequest page = PageRequest.of(from / size, size, Sort.by("created").descending());
         itemRequests = requestRepository.findByRequesterIdNot(userId, page)
                 .getContent();
         Map<Long, List<Item>> items = itemRepository.findByRequestIdIn(itemRequests.stream()

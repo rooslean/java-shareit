@@ -66,7 +66,7 @@ public class ItemServiceImpl implements ItemService {
     public List<ItemDto> findItemsByOwnerId(Long ownerId, int from, int size) {
         List<Item> items;
 
-        PageRequest page = PageRequest.of(from > 0 ? from / size : 0, size);
+        PageRequest page = PageRequest.of(from / size, size);
         items = itemRepository.findByOwnerIdOrderById(ownerId, page)
                 .getContent();
         List<ItemDto> itemsWithBookings;
@@ -87,7 +87,7 @@ public class ItemServiceImpl implements ItemService {
         if (searchPhrase == null || searchPhrase.trim().isEmpty()) {
             return Collections.emptyList();
         }
-        PageRequest page = PageRequest.of(from > 0 ? from / size : 0, size);
+        PageRequest page = PageRequest.of(from / size, size);
 
         return itemRepository.findByNameOrDescription(searchPhrase, page)
                 .stream()

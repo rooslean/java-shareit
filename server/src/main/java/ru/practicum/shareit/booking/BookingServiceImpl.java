@@ -80,9 +80,7 @@ public class BookingServiceImpl implements BookingService {
     public List<BookingDto> findAllByBookerIdAndBookingState(long bookerId, BookingState state, int from, int size) {
         List<BookingDto> bookingsDto = new ArrayList<>();
         doesUserExist(bookerId);
-        PageRequest page = PageRequest.of(from > 0 ? from / size : 0, size);
-        Sort sort = Sort.by(Sort.Direction.DESC, "start");
-        page = page.withSort(sort);
+        PageRequest page = PageRequest.of(from / size, size, Sort.by(Sort.Direction.DESC, "start"));
         switch (state) {
             case ALL:
                 bookingsDto = BookingMapper.mapToBookingDto(bookingRepository.findAllByBookerId(bookerId, page));
@@ -110,9 +108,7 @@ public class BookingServiceImpl implements BookingService {
     public List<BookingDto> findAllByOwnerIdAndBookingState(long ownerId, BookingState state, int from, int size) {
         List<BookingDto> bookingsDto = new ArrayList<>();
         doesUserExist(ownerId);
-        PageRequest page = PageRequest.of(from > 0 ? from / size : 0, size);
-        Sort sort = Sort.by("start").descending();
-        page = page.withSort(sort);
+        PageRequest page = PageRequest.of(from / size, size, Sort.by("start").descending());
         switch (state) {
             case ALL:
                 bookingsDto = BookingMapper.mapToBookingDto(bookingRepository.findAllByItemOwnerId(ownerId, page));
