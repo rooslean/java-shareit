@@ -14,7 +14,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Controller
 @RequestMapping(path = "/bookings")

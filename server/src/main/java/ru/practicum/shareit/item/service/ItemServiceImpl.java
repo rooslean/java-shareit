@@ -12,7 +12,6 @@ import ru.practicum.shareit.booking.BookingStatus;
 import ru.practicum.shareit.exception.BadRequestException;
 import ru.practicum.shareit.exception.NoRightsForUpdateException;
 import ru.practicum.shareit.exception.ObjectNotFoundException;
-import ru.practicum.shareit.exception.ObjectNotValidException;
 import ru.practicum.shareit.item.ItemMapper;
 import ru.practicum.shareit.item.comments.Comment;
 import ru.practicum.shareit.item.comments.CommentDto;

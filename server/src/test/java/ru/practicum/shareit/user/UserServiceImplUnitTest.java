@@ -7,7 +7,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.practicum.shareit.exception.ObjectNotFoundException;
-import ru.practicum.shareit.exception.ObjectNotValidException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
@@ -48,38 +47,6 @@ public class UserServiceImplUnitTest {
                 .findById(1L);
         Mockito.verify(mockUserRepository, Mockito.times(1))
                 .save(new User(1L, "Slava", "slava@test.com"));
-    }
-
-    @Test
-    void testUpdateUserWithInvalidName() {
-        UserService userService = new UserServiceImpl(mockUserRepository);
-
-        UserDto userDto = UserDto.builder()
-                .name("")
-                .email("slava@test.com")
-                .build();
-
-        final ObjectNotValidException exception = Assertions.assertThrows(ObjectNotValidException.class,
-                () -> userService.updateUser(1L, userDto));
-
-        assertThat(exception.getMessage(), equalTo("Введены невалидные данные"));
-        Mockito.verifyNoInteractions(mockUserRepository);
-    }
-
-    @Test
-    void testUpdateUserWithInvalidEmail() {
-        UserService userService = new UserServiceImpl(mockUserRepository);
-
-        UserDto userDto = UserDto.builder()
-                .name("Slava")
-                .email("")
-                .build();
-
-        final ObjectNotValidException exception = Assertions.assertThrows(ObjectNotValidException.class,
-                () -> userService.updateUser(1L, userDto));
-
-        assertThat(exception.getMessage(), equalTo("Введены невалидные данные"));
-        Mockito.verifyNoInteractions(mockUserRepository);
     }
 
     @Test

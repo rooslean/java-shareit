@@ -40,26 +40,6 @@ public class BookingServiceImplUnitTest {
     private final Sort sort = Sort.by("start").descending();
 
     @Test
-    void testAddBookingWithInvalidData() {
-        BookingService service = getBookingService();
-        NewBookingDto newBookingDto = NewBookingDto.builder()
-                .itemId(1L)
-                .start(LocalDateTime.now().plusDays(3))
-                .end(LocalDateTime.now().plusDays(2))
-                .build();
-
-        final ObjectNotValidException exception = Assertions.assertThrows(ObjectNotValidException.class,
-                () -> service.add(newBookingDto, 1L));
-
-        assertThat(exception.getMessage(), equalTo("Дата начала не может быть равна или позже даты конца"));
-
-        Mockito.verifyNoInteractions(userRepository);
-        Mockito.verifyNoInteractions(bookingRepository);
-        Mockito.verifyNoInteractions(itemRepository);
-
-    }
-
-    @Test
     void testAddBookingUserNotFound() {
         BookingService service = getBookingService();
         NewBookingDto newBookingDto = NewBookingDto.builder()

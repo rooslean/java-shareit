@@ -15,7 +15,6 @@ import ru.practicum.shareit.booking.BookingStatus;
 import ru.practicum.shareit.exception.BadRequestException;
 import ru.practicum.shareit.exception.NoRightsForUpdateException;
 import ru.practicum.shareit.exception.ObjectNotFoundException;
-import ru.practicum.shareit.exception.ObjectNotValidException;
 import ru.practicum.shareit.item.comments.Comment;
 import ru.practicum.shareit.item.comments.CommentDto;
 import ru.practicum.shareit.item.comments.CommentRepository;
@@ -282,24 +281,6 @@ public class ItemServiceImplUnitTest {
         assertThat(itemDtoAdd.getId(), equalTo(1L));
         assertThat(itemDtoAdd.getAvailable(), equalTo(true));
         assertThat(itemDtoAdd.getOwnerId(), equalTo(1L));
-    }
-
-    @Test
-    void testAddItemInvalidData() {
-        ItemService service = makeItemService();
-        ItemDto itemDto = ItemDto.builder()
-                .name("Пила")
-                .description("Пилит")
-                .build();
-
-        final ObjectNotValidException exception = Assertions.assertThrows(ObjectNotValidException.class,
-                () -> service.addItem(1L, itemDto));
-
-        Mockito.verifyNoInteractions(userRepository);
-        Mockito.verifyNoInteractions(requestRepository);
-        Mockito.verifyNoInteractions(itemRepository);
-
-        assertThat(exception.getMessage(), equalTo("Введены невалидные данные"));
     }
 
     @Test
