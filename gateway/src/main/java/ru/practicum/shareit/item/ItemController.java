@@ -2,6 +2,7 @@ package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
@@ -51,6 +52,7 @@ public class ItemController {
     }
 
     @PostMapping("/{itemId}/comment")
+    @Cacheable
     public ResponseEntity<Object> addComment(@RequestHeader("X-Sharer-User-Id") Long userId, @RequestBody @Valid CommentDto commentDto,
                                              @PathVariable long itemId) {
         log.info("Add comment to item with userId={}, itemId={}", userId, itemId);

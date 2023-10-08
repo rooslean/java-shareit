@@ -13,12 +13,7 @@ import java.time.LocalDateTime;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class NewBookingDto {
-    @NotNull
     Long itemId;
-    @NotNull
-    @Future
     LocalDateTime start;
-    @NotNull
-    @Future
     LocalDateTime end;
 }

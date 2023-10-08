@@ -15,9 +15,6 @@ import javax.validation.constraints.NotBlank;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserDto {
     Long id;
-    @NotBlank(groups = NewUser.class)
     String name;
-    @Email(groups = {NewUser.class, ExistUser.class})
-    @NotBlank(groups = NewUser.class)
     String email;
 }
