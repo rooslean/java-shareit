@@ -51,7 +51,6 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public UserDto updateUser(Long userId, UserDto userDto) {
-        isValidForUpdate(userDto);
         userDto.setId(userId);
         Optional<User> user = userRepository.findById(userDto.getId());
         if (userDto.getId() == null || user.isEmpty()) {
@@ -67,15 +66,5 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUserById(Long userId) {
         userRepository.deleteById(userId);
-    }
-
-
-    private void isValidForUpdate(UserDto userDto) {
-        if (userDto.getEmail() != null
-                && userDto.getEmail().isEmpty()
-                || userDto.getName() != null
-                && userDto.getName().isEmpty()) {
-            throw new ObjectNotValidException();
-        }
     }
 }

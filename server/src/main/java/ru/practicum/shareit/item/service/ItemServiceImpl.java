@@ -98,7 +98,6 @@ public class ItemServiceImpl implements ItemService {
     @Transactional
     @Override
     public ItemDto addItem(Long ownerId, ItemDto itemDto) {
-        isValidForCreation(itemDto);
         Optional<User> owner = userRepository.findById(ownerId);
         if (owner.isEmpty()) {
             throw new ObjectNotFoundException("Пользователь", ownerId);
@@ -117,7 +116,6 @@ public class ItemServiceImpl implements ItemService {
     @Transactional
     @Override
     public ItemDto updateItem(Long itemId, Long ownerId, ItemDto itemDto) {
-        isValidForUpdate(itemDto);
         Optional<User> owner = userRepository.findById(ownerId);
         if (owner.isEmpty()) {
             throw new ObjectNotFoundException("Пользователь", ownerId);
@@ -158,24 +156,5 @@ public class ItemServiceImpl implements ItemService {
         }
         Comment comment = commentRepository.save(CommentMapper.mapToComment(commentDto, item, user.get()));
         return CommentMapper.mapToCommentDto(comment);
-    }
-
-    private void isValidForCreation(ItemDto itemDto) {
-        if (itemDto.getName() == null
-                || itemDto.getName().isEmpty()
-                || itemDto.getDescription() == null
-                || itemDto.getDescription().isEmpty()
-                || itemDto.getAvailable() == null) {
-            throw new ObjectNotValidException();
-        }
-    }
-
-    private void isValidForUpdate(ItemDto itemDto) {
-        if (itemDto.getName() != null
-                && itemDto.getName().isEmpty()
-                || itemDto.getDescription() != null
-                && itemDto.getDescription().isEmpty()) {
-            throw new ObjectNotValidException();
-        }
     }
 }

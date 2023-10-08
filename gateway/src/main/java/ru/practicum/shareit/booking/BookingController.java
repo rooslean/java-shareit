@@ -8,10 +8,13 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingState;
 import ru.practicum.shareit.booking.dto.NewBookingDto;
+import ru.practicum.shareit.exception.ObjectNotValidException;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Controller
 @RequestMapping(path = "/bookings")
@@ -23,6 +26,7 @@ public class BookingController {
 
     @PostMapping
     public ResponseEntity<Object> addBooking(@RequestBody @Valid NewBookingDto newBookingDto, @RequestHeader("X-Sharer-User-Id") Long bookerId) {
+        validateBookingPeriod(newBookingDto);
         log.info("Add booking with userId={}", bookerId);
         return bookingClient.addBooking(newBookingDto, bookerId);
     }
@@ -60,5 +64,13 @@ public class BookingController {
                 .orElseThrow(() -> new IllegalArgumentException("Unknown state: " + stateParam));
         log.info("Get booking with state {}, ownerId={}, from={}, size={}", stateParam, ownerId, from, size);
         return bookingClient.getOwnerBookings(ownerId, state, from, size);
+    }
+
+    private void validateBookingPeriod(NewBookingDto newBookingDto) {
+        LocalDateTime start = newBookingDto.getStart();
+        LocalDateTime end = newBookingDto.getEnd();
+        if (!start.isBefore(end)) {
+            throw new ObjectNotValidException("Дата начала не может быть равна или позже даты конца");
+        }
     }
 }

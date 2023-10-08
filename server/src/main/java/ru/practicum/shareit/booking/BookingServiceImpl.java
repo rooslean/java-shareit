@@ -33,7 +33,6 @@ public class BookingServiceImpl implements BookingService {
     @Override
     @Transactional
     public BookingDto add(NewBookingDto newBookingDto, long bookerId) {
-        validateBookingPeriod(newBookingDto);
         User booker = doesUserExist(bookerId);
         Item item = itemRepository.getItemById(newBookingDto.getItemId());
         if (item == null) {

@@ -25,9 +25,9 @@ public class ErrorHandler {
         return new ErrorResponse(e.getMessage(), "");
     }
 
-    @ExceptionHandler
+    @ExceptionHandler({ObjectNotValidException.class, MethodArgumentNotValidException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleValidationError(final MethodArgumentNotValidException e) {
+    public ErrorResponse handleValidationError(final Exception e) {
         log.warn(e.getMessage());
         return new ErrorResponse("Ошибка валидации", e.getMessage());
     }

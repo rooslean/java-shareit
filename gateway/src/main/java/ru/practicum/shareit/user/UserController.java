@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.exception.ObjectNotValidException;
 import ru.practicum.shareit.user.dto.ExistUser;
 import ru.practicum.shareit.user.dto.NewUser;
 import ru.practicum.shareit.user.dto.UserDto;
@@ -38,6 +39,7 @@ public class UserController {
 
     @PatchMapping("/{userId}")
     public ResponseEntity<Object> updateUser(@PathVariable Long userId, @Validated(ExistUser.class) @RequestBody UserDto userDto) {
+        isValidForUpdate(userDto);
         log.info("Patch user with userId={}", userId);
         return client.updateUser(userId, userDto);
     }
@@ -46,5 +48,14 @@ public class UserController {
     public ResponseEntity<Object> deleteUserById(@PathVariable Long userId) {
         log.info("Delete user with userId={}", userId);
         return client.deleteUserById(userId);
+    }
+
+    private void isValidForUpdate(UserDto userDto) {
+        if (userDto.getEmail() != null
+                && userDto.getEmail().isEmpty()
+                || userDto.getName() != null
+                && userDto.getName().isEmpty()) {
+            throw new ObjectNotValidException();
+        }
     }
 }

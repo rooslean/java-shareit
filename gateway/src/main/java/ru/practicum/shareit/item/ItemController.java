@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.exception.ObjectNotValidException;
 import ru.practicum.shareit.item.comments.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 
@@ -47,6 +48,7 @@ public class ItemController {
 
     @PostMapping
     public ResponseEntity<Object> addItem(@RequestHeader("X-Sharer-User-Id") Long userId, @RequestBody ItemDto itemDto) {
+        isValidForCreation(itemDto);
         log.info("Add item with userId={}", userId);
         return client.addItem(userId, itemDto);
     }
@@ -61,8 +63,27 @@ public class ItemController {
 
     @PatchMapping("/{itemId}")
     public ResponseEntity<Object> updateItem(@PathVariable Long itemId, @RequestHeader("X-Sharer-User-Id") Long userId, @RequestBody ItemDto itemDto) {
+        isValidForUpdate(itemDto);
         log.info("Patch item with userId={}, itemId={}", userId, itemDto);
         return client.updateItem(itemId, userId, itemDto);
     }
 
+    private void isValidForCreation(ItemDto itemDto) {
+        if (itemDto.getName() == null
+                || itemDto.getName().isEmpty()
+                || itemDto.getDescription() == null
+                || itemDto.getDescription().isEmpty()
+                || itemDto.getAvailable() == null) {
+            throw new ObjectNotValidException();
+        }
+    }
+
+    private void isValidForUpdate(ItemDto itemDto) {
+        if (itemDto.getName() != null
+                && itemDto.getName().isEmpty()
+                || itemDto.getDescription() != null
+                && itemDto.getDescription().isEmpty()) {
+            throw new ObjectNotValidException();
+        }
+    }
 }
